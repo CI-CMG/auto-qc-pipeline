@@ -1,4 +1,4 @@
-# uscg-split-survey
+# auto-qc-pipeline
 
 ## Setting up the Python Environment
 
