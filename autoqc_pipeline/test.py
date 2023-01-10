@@ -6,8 +6,6 @@ from autoqc_pipeline.routes.test_route import TestRoute
 
 if __name__ == '__main__':
 
-  queue = Queue()
-
   test_route = TestRoute(3, SampleProcessor(), Queue(), SampleProcessor2())
   test_route.build()
   joiners = test_route.start()
