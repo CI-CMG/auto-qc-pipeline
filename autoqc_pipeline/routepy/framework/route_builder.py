@@ -6,14 +6,19 @@ from autoqc_pipeline.routepy.framework.source_wrapper import SourceWrapper
 class Route:
 
   def __init__(self, source):
+    self.__source = source
     self.__source_wrapper = SourceWrapper(source, self)
     source.set_source_wrapper(self.__source_wrapper)
     self.__processors = []
 
   # todo move this to separate class
   def process(self, exchange):
-    for processor in self.__processors:
-      processor.process(exchange)
+    try:
+      for processor in self.__processors:
+        processor.process(exchange)
+      self.__source.event_success()
+    except Exception as err:
+      self.__source.event_failure(err)
 
   def to(self, processor):
     self.__processors.append(processor)

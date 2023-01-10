@@ -16,4 +16,4 @@ class TestRoute(RouteBuilder):
 
   def build(self):
     self.comes_from(TimeIntervalSource(self.__interval_seconds)).to(self.__sample_processor).to(QueueEndpoint(self.__sample_queue))
-    self.comes_from(QueueSource(self.__sample_queue)).to(self.__sample_processor2)
+    self.comes_from(QueueSource(self.__sample_queue, concurrent_consumers=3)).to(self.__sample_processor2)

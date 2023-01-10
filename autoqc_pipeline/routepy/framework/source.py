@@ -13,3 +13,12 @@ class Source(metaclass=abc.ABCMeta):
   @abc.abstractmethod
   def set_source_wrapper(self, source_wrapper):
     pass
+
+  @abc.abstractmethod
+  def event_success(self):
+      pass
+
+  # todo exchange with error
+  @abc.abstractmethod
+  def event_failure(self, err):
+    pass

@@ -27,5 +27,12 @@ class TimeIntervalSource(Source):
     sleep(self.__interval_seconds)
     return Exchange(datetime.now())
 
+  def event_success(self):
+    pass
+
+  def event_failure(self, err):
+    print(f"Unexpected {err=}, {type(err)=}")
+    pass
+
 
 
