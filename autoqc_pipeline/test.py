@@ -1,3 +1,4 @@
+import os
 import warnings
 from multiprocessing import JoinableQueue
 
@@ -14,10 +15,9 @@ from autoqc_pipeline.routes.test_route import TestRoute
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-
 if __name__ == '__main__':
-  wod_directory = '/Users/cslater/Desktop/wod/wod18'
-  gunzip_directory = '/Users/cslater/projects/auto-qc-pipeline/gunzip-dir'
+  wod_directory = os.environ['WOD_GZ_DATA']
+  gunzip_directory = os.environ['WOD_UNGZ_DATA']
   gunzip_queue = JoinableQueue(3)
   test_queue = JoinableQueue(1000)
   gunzip_processor = GunzipProcessor(wod_directory, gunzip_directory)
