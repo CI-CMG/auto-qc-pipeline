@@ -23,7 +23,6 @@ class TestInfo(object):
 
   def load_parameters(self):
     if self.__has_parameters:
-      print()
       self.__module.loadParameters(parameter_store)
 
   def test(self, profile):
@@ -61,6 +60,6 @@ class TestProcessor(Processor):
       profile = exchange.get_body().profile
       for test in tests:
         test_results[test.name] = test.test(profile)
-      exchange.set_body(test_results)
+      exchange.get_body().test_results = test_results
     finally:
       os.chdir(cwd)
