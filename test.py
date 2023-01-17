@@ -18,8 +18,8 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 if __name__ == '__main__':
   wod_directory = os.environ['WOD_GZ_DATA']
   gunzip_directory = os.environ['WOD_UNGZ_DATA']
-  gunzip_queue = JoinableQueue(3)
-  test_queue = JoinableQueue(1000)
+  gunzip_queue = JoinableQueue(maxsize=1000)
+  test_queue = JoinableQueue(maxsize=1000)
   gunzip_processor = GunzipProcessor(wod_directory, gunzip_directory)
   wodpy_processor = WodpyProcessor(test_queue)
   test_processor = TestProcessor()

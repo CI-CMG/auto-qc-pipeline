@@ -24,7 +24,7 @@ class TestRoute(RouteBuilder):
 
   def build(self):
     self.comes_from(FileSource(FileSourceConfiguration().set_directory(self.__wod_directory).set_recursive(True).set_include_ext(['gz']).set_done_file_ext('autoqc'))).to(self.__message_prep_processor).to(QueueEndpoint(self.__gunzip_queue, block_when_full=True))
-    self.comes_from(QueueSource(self.__gunzip_queue)).to(self.__gunzip_processor).to(self.__wodpy_processor)
+    self.comes_from(QueueSource(self.__gunzip_queue, concurrent_consumers=3)).to(self.__gunzip_processor).to(self.__wodpy_processor)
     self.comes_from(QueueSource(self.__test_queue, concurrent_consumers=16)).filter(self.__profile_filter).to(self.__test_processor).to(self.__test_result_processor)
 
 
