@@ -16,9 +16,9 @@ class Route:
     try:
       for processor in self.__processors:
         processor.process(exchange)
-      self.__source.event_success()
+      self.__source.event_success(exchange)
     except Exception as err:
-      self.__source.event_failure(err)
+      self.__source.event_failure(err, exchange)
 
   def to(self, processor):
     self.__processors.append(processor)

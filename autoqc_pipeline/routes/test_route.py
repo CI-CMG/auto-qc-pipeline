@@ -1,19 +1,29 @@
-from autoqc_pipeline.routepy.component.queue_endpoint import QueueEndpoint
-from autoqc_pipeline.routepy.component.queue_source import QueueSource
-from autoqc_pipeline.routepy.component.time_interval_source import TimeIntervalSource
+from autoqc_pipeline.routepy.component.file.file_configuration import \
+  FileSourceConfiguration
+from autoqc_pipeline.routepy.component.file.file_source import FileSource
+from autoqc_pipeline.routepy.component.seda.queue_endpoint import QueueEndpoint
+from autoqc_pipeline.routepy.component.seda.queue_source import QueueSource
 from autoqc_pipeline.routepy.framework.route_builder import RouteBuilder
 
 
 class TestRoute(RouteBuilder):
 
 
-  def __init__(self, interval_seconds, sample_processor, sample_queue, sample_processor2, *args, **kw):
+  def __init__(self, wod_directory, gunzip_directory, gunzip_queue, test_queue, message_prep_processor, gunzip_processor, wodpy_processor, test_processor, test_result_processor, *args, **kw):
     super().__init__(*args, **kw)
-    self.__interval_seconds = interval_seconds
-    self.__sample_processor = sample_processor
-    self.__sample_queue = sample_queue
-    self.__sample_processor2 = sample_processor2;
+    self.__wod_directory = wod_directory
+    self.__gunzip_directory = gunzip_directory
+    self.__gunzip_queue = gunzip_queue
+    self.__test_queue = test_queue
+    self.__message_prep_processor = message_prep_processor
+    self.__gunzip_processor = gunzip_processor
+    self.__wodpy_processor = wodpy_processor
+    self.__test_processor = test_processor
+    self.__test_result_processor = test_result_processor
 
   def build(self):
-    self.comes_from(TimeIntervalSource(self.__interval_seconds)).to(self.__sample_processor).to(QueueEndpoint(self.__sample_queue))
-    self.comes_from(QueueSource(self.__sample_queue, concurrent_consumers=3)).to(self.__sample_processor2)
+    self.comes_from(FileSource(FileSourceConfiguration().set_directory(self.__wod_directory).set_recursive(True).set_include_ext(['gz']).set_done_file_ext('autoqc'))).to(self.__message_prep_processor).to(QueueEndpoint(self.__gunzip_queue, block_when_full=True))
+    self.comes_from(QueueSource(self.__gunzip_queue)).to(self.__gunzip_processor).to(self.__wodpy_processor)
+    self.comes_from(QueueSource(self.__test_queue, concurrent_consumers=16)).to(self.__test_processor).to(self.__test_result_processor)
+
+

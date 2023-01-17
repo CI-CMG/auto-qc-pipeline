@@ -15,10 +15,10 @@ class Source(metaclass=abc.ABCMeta):
     pass
 
   @abc.abstractmethod
-  def event_success(self):
+  def event_success(self, exchange):
       pass
 
   # todo exchange with error
   @abc.abstractmethod
-  def event_failure(self, err):
+  def event_failure(self, err, exchange):
     pass

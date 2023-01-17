@@ -31,11 +31,11 @@ class QueueSource(Source):
   def wait_for_event(self):
     return Exchange(self.__queue.get())
 
-  def event_success(self):
+  def event_success(self, exchange):
     self.__queue.task_done()
     pass
 
-  def event_failure(self, err):
+  def event_failure(self, err, exchange):
     self.__queue.task_done()
     print(f"Unexpected {err=}, {type(err)=}")
     pass
