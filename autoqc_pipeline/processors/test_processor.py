@@ -6,7 +6,7 @@ import qctests.AOML_spike as AOML_spike
 import qctests.Argo_impossible_date_test as Argo_impossible_date_test
 import qctests.Argo_impossible_location_test as Argo_impossible_location_test
 import qctests.Argo_regional_range_test as Argo_regional_range_test
-import qctests.EN_background_available_check as EN_background_available_check
+# import qctests.EN_background_available_check as EN_background_available_check
 
 from autoqc_pipeline.routepy.framework.processor import Processor
 
@@ -36,7 +36,7 @@ tests = [
   TestInfo('Argo_impossible_date_test', Argo_impossible_date_test),
   TestInfo('Argo_impossible_location_test', Argo_impossible_location_test),
   TestInfo('Argo_regional_range_test', Argo_regional_range_test),
-  TestInfo('EN_background_available_check', EN_background_available_check, has_parameters=True)
+  # TestInfo('EN_background_available_check', EN_background_available_check, has_parameters=True)
 ]
 
 cwd = os.getcwd()

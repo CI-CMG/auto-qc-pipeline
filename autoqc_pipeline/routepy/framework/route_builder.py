@@ -1,4 +1,5 @@
 import abc
+import copy
 
 from autoqc_pipeline.routepy.framework.source_wrapper import SourceWrapper
 
@@ -6,6 +7,7 @@ class ExchangeHandler(object):
   def __init__(self):
     self.__processor = None
     self.__filter = None
+    self.__aggregate = None
 
   @property
   def processor(self):
@@ -31,6 +33,18 @@ class ExchangeHandler(object):
     self.__filter = value
     return self
 
+  @property
+  def aggregate(self):
+    return self.__aggregate
+
+  @aggregate.setter
+  def aggregate(self, value):
+    self.set_aggregate(value)
+
+  def set_aggregate(self, value):
+    self.__aggregate = value
+    return self
+
 class Route:
 
   def __init__(self, source):
@@ -42,12 +56,17 @@ class Route:
   # todo move this to separate class
   def process(self, exchange):
     try:
+      next_exchange = copy.deepcopy(exchange)
       for exchange_handler in self.__exchange_handlers:
         if exchange_handler.processor:
-          exchange_handler.processor.process(exchange)
+          exchange_handler.processor.process(next_exchange)
         elif exchange_handler.filter:
-          keep_going = exchange_handler.filter.filter(exchange)
+          keep_going = exchange_handler.filter.filter(next_exchange)
           if not keep_going:
+            break
+        elif exchange_handler.aggregate:
+          next_exchange = exchange_handler.aggregate.aggregate(next_exchange)
+          if not next_exchange:
             break
         else:
           raise Exception("Internal error: invalid exchange handler")
@@ -61,6 +80,10 @@ class Route:
 
   def filter(self, filter):
     self.__exchange_handlers.append(ExchangeHandler().set_filter(filter))
+    return self
+
+  def aggregate(self, aggregate):
+    self.__exchange_handlers.append(ExchangeHandler().set_aggregate(aggregate))
     return self
 
   def start(self):

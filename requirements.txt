@@ -1,7 +1,7 @@
 pyside6==6.4.2
 numpy==1.20.3
 wodpy==1.6.2
-pyproj==2.6.0
+pyproj==3.4.1
 shapely==2.0.0
 oceansdb==0.8.14
 netCDF4==1.6.2

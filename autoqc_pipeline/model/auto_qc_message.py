@@ -5,6 +5,7 @@ class AutoQcMessage(object):
     self.__wod_file_path = None
     self.__profile = None
     self.test_results = {}
+    self.__file_path_prefix = None
 
   @property
   def gzip_file_path(self):
@@ -40,6 +41,18 @@ class AutoQcMessage(object):
 
   def set_profile(self, value):
     self.__profile = value
+    return self
+
+  @property
+  def file_path_prefix(self):
+    return  self.__file_path_prefix
+
+  @file_path_prefix.setter
+  def file_path_prefix(self, value):
+    self.set_file_path_prefix(value)
+
+  def set_file_path_prefix(self, value):
+    self.__file_path_prefix = value
     return self
 
   def __str__(self):
