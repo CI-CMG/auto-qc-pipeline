@@ -6,3 +6,5 @@ shapely==2.0.0
 oceansdb==0.8.14
 netCDF4==1.6.2
 gsw==3.6.16.post1
+eipiphany-file==0.1.0.dev20230127045411
+eipiphany-seda==0.1.0.dev20230127045411
