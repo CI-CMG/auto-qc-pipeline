@@ -5,3 +5,4 @@ with open('target/test_results.txt', 'r') as f:
     code = 1
 
 exit(code)
+

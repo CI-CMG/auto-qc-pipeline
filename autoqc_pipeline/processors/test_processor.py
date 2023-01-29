@@ -41,10 +41,11 @@ tests = [
 
 cwd = os.getcwd()
 try:
-  auto_qc_home = os.environ['AUTO_QC_HOME']
-  os.chdir(auto_qc_home)
-  for test in tests:
-    test.load_parameters()
+  auto_qc_home = os.environ.get('AUTO_QC_HOME')
+  if(auto_qc_home):
+    os.chdir(auto_qc_home)
+    for test in tests:
+      test.load_parameters()
 finally:
   os.chdir(cwd)
 

@@ -14,15 +14,43 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
+    <maven.main.skip>true</maven.main.skip>
+    <autoqc.path>../AutoQC</autoqc.path>
   </properties>
 
 
   <build>
+
     <pluginManagement>
       <plugins>
         <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>3.2.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.3.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>2.5.2</version>
+        </plugin>
+        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-deploy-plugin</artifactId>
+          <version>3.0.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>3.2.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
           <version>3.0.0</version>
         </plugin>
       </plugins>
@@ -30,9 +58,23 @@
 
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-install-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>3.0.0</version>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
-        <version>3.2.0</version>
         <executions>
           <execution>
             <id>wheel.version</id>
@@ -51,11 +93,12 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
         <executions>
           <execution>
             <id>setuptools</id>
-            <phase>generate-resources</phase>
+            <phase>generate-sources</phase>
             <goals>
               <goal>copy-resources</goal>
             </goals>
@@ -72,8 +115,8 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-clean-plugin</artifactId>
-        <version>3.1.0</version>
         <configuration>
           <filesets>
             <fileset>
@@ -86,7 +129,7 @@
               <directory>htmlcov</directory>
             </fileset>
             <fileset>
-              <directory>uscg_split_survey.egg-info</directory>
+              <directory>src/autoqc_pipeline.egg-info</directory>
             </fileset>
             <fileset>
               <directory>.pytest_cache</directory>
@@ -96,6 +139,7 @@
               <includes>
                 <include>.coverage</include>
                 <include>coverage.xml</include>
+                <include>setup.py</include>
               </includes>
             </fileset>
           </filesets>
@@ -104,7 +148,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-        <version>3.0.0</version>
         <executions>
           <execution>
             <id>install-build-dependencies</id>
@@ -118,6 +161,7 @@
                 <argument>-m</argument>
                 <argument>pip</argument>
                 <argument>install</argument>
+                <argument>--pre</argument>
                 <argument>--upgrade</argument>
                 <argument>pip</argument>
                 <argument>setuptools</argument>
@@ -136,73 +180,80 @@
               <executable>pip</executable>
               <arguments>
                 <argument>install</argument>
+                <argument>--pre</argument>
                 <argument>-r</argument>
-                <argument>requirements_dev.txt</argument>
+                <argument>requirements.txt</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>install-test-dependencies</id>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>pip</executable>
+              <arguments>
+                <argument>install</argument>
+                <argument>--pre</argument>
+                <argument>-r</argument>
+                <argument>requirements-dev.txt</argument>
               </arguments>
             </configuration>
           </execution>
           <execution>
             <id>run-tests</id>
-            <phase>integration-test</phase>
+            <phase>test</phase>
             <goals>
               <goal>exec</goal>
             </goals>
             <configuration>
               <executable>python</executable>
               <arguments>
-                <argument>run-tests.py</argument>
+                <argument>run-test.py</argument>
               </arguments>
+              <environmentVariables>
+                <PYTHONPATH>${autoqc.path}</PYTHONPATH>
+              </environmentVariables>
             </configuration>
           </execution>
-<!--          <execution>-->
-<!--            <id>coverage-xml</id>-->
-<!--            <phase>post-integration-test</phase>-->
-<!--            <goals>-->
-<!--              <goal>exec</goal>-->
-<!--            </goals>-->
-<!--            <configuration>-->
-<!--              <executable>coverage</executable>-->
-<!--              <arguments>-->
-<!--                <argument>xml</argument>-->
-<!--              </arguments>-->
-<!--            </configuration>-->
-<!--          </execution>-->
-<!--          <execution>-->
-<!--            <id>coverage-html</id>-->
-<!--            <phase>post-integration-test</phase>-->
-<!--            <goals>-->
-<!--              <goal>exec</goal>-->
-<!--            </goals>-->
-<!--            <configuration>-->
-<!--              <executable>coverage</executable>-->
-<!--              <arguments>-->
-<!--                <argument>html</argument>-->
-<!--              </arguments>-->
-<!--            </configuration>-->
-<!--          </execution>-->
           <execution>
             <id>verify-tests</id>
-            <phase>verify</phase>
+            <phase>test</phase>
             <goals>
               <goal>exec</goal>
             </goals>
             <configuration>
               <executable>python</executable>
               <arguments>
-                <argument>validate-tests.py</argument>
+                <argument>validate-test.py</argument>
               </arguments>
             </configuration>
           </execution>
           <execution>
-            <id>build-exe</id>
-            <phase>package</phase>
+            <id>coverage-xml</id>
+            <phase>test</phase>
             <goals>
               <goal>exec</goal>
             </goals>
             <configuration>
-              <executable>pyinstaller</executable>
+              <executable>coverage</executable>
               <arguments>
-                <argument>uscg_split_survey/split_survey.py</argument>
+                <argument>xml</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
+            <id>coverage-html</id>
+            <phase>test</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>coverage</executable>
+              <arguments>
+                <argument>html</argument>
               </arguments>
             </configuration>
           </execution>
@@ -235,49 +286,30 @@
               <executable>pip</executable>
               <arguments>
                 <argument>install</argument>
-                <argument>-I</argument>
-                <argument>dist/uscg_split_survey-${wheel.version}-py3-none-any.whl</argument>
+                <argument>--pre</argument>
+                <argument>dist/autoqc_pipeline-${wheel.version}-py3-none-any.whl</argument>
               </arguments>
             </configuration>
           </execution>
-<!--          <execution>-->
-<!--            <id>deploy</id>-->
-<!--            <phase>deploy</phase>-->
-<!--            <goals>-->
-<!--              <goal>exec</goal>-->
-<!--            </goals>-->
-<!--            <configuration>-->
-<!--              <executable>python</executable>-->
-<!--              <arguments>-->
-<!--                <argument>-m</argument>-->
-<!--                <argument>twine</argument>-->
-<!--                <argument>upload</argument>-->
-<!--                <argument>dist/*</argument>-->
-<!--              </arguments>-->
-<!--              <environmentVariables>-->
-<!--                <TWINE_USERNAME>${env.TWINE_USERNAME}</TWINE_USERNAME>-->
-<!--                <TWINE_PASSWORD>${env.TWINE_PASSWORD}</TWINE_PASSWORD>-->
-<!--              </environmentVariables>-->
-<!--            </configuration>-->
-<!--          </execution>-->
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.3.0</version>
-        <configuration>
-          <tarLongFileMode>posix</tarLongFileMode>
-          <descriptors>
-            <descriptor>dist.xml</descriptor>
-          </descriptors>
-        </configuration>
-        <executions>
           <execution>
-            <id>make-assembly</id>
-            <phase>package</phase>
+            <id>deploy</id>
+            <phase>deploy</phase>
             <goals>
-              <goal>single</goal>
+              <goal>exec</goal>
             </goals>
+            <configuration>
+              <executable>python</executable>
+              <arguments>
+                <argument>-m</argument>
+                <argument>twine</argument>
+                <argument>upload</argument>
+                <argument>dist/*</argument>
+              </arguments>
+              <environmentVariables>
+                <TWINE_USERNAME>${env.TWINE_USERNAME}</TWINE_USERNAME>
+                <TWINE_PASSWORD>${env.TWINE_PASSWORD}</TWINE_PASSWORD>
+              </environmentVariables>
+            </configuration>
           </execution>
         </executions>
       </plugin>
