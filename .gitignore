@@ -10,3 +10,5 @@ dist
 build
 *.egg-info
 /setup.py
+gunzip-dir
+test-dir
