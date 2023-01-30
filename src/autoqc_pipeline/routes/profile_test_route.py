@@ -9,7 +9,7 @@ class ProfileTestRoute(RouteBuilder):
 
   def __init__(self, test_concurrency, error_queue, dlq_prep_processor,
       profile_test_failure_queue, file_test_result_queue, test_queue,
-      test_processor, *args, **kw):
+      test_processor, iquod_flag_processor, *args, **kw):
     super().__init__(*args, **kw)
     self.__test_concurrency = test_concurrency
     self.__error_queue = error_queue
@@ -18,6 +18,7 @@ class ProfileTestRoute(RouteBuilder):
     self.__file_test_result_queue = file_test_result_queue
     self.__test_queue = test_queue
     self.__test_processor = test_processor
+    self.__iquod_flag_processor = iquod_flag_processor
 
 
   def build(self):
@@ -28,5 +29,6 @@ class ProfileTestRoute(RouteBuilder):
     self._from(
       QueueSource(self.__test_queue, concurrent_consumers=self.__test_concurrency))\
       .to(self.__test_processor)\
+      .to(self.__iquod_flag_processor)\
       .to(QueueEndpoint(self.__profile_test_failure_queue, block_when_full=True))\
       .to(QueueEndpoint(self.__file_test_result_queue, block_when_full=True)) # aggregator queue

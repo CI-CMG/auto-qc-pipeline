@@ -7,6 +7,7 @@ class ProfileTestResult(object):
       self.__depth_failures.append(set())
     self.skipped = False
     self.exception = None
+    self.iquod_flags = None
 
   @property
   def profile_failures(self):

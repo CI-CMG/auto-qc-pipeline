@@ -4,6 +4,7 @@ from ..filters.pathological_profile_filter import PathologicalProfilesFilter
 from ..processors.file_gunzip_processor import FileGunzipProcessor
 from ..processors.file_message_processor import FileMessageProcessor
 from ..processors.file_summary_save_processor import FileSummarySaveProcessor
+from ..processors.iquod_flag_processor import IquodFlagProcessor
 from ..processors.profile_failure_save_processor import \
   ProfileFailureSaveProcessor
 from ..processors.profile_test_processor import ProfileTestProcessor
@@ -41,6 +42,7 @@ class RouteConfigurer(object):
     self.__summary_save_processor = FileSummarySaveProcessor(output_directory)
     self.__profile_failure_save_processor = ProfileFailureSaveProcessor(
       output_directory)
+    self.__iquod_flag_processor = IquodFlagProcessor()
 
   def configure(self):
     self.__eip_context.add_route_builder(
@@ -53,7 +55,7 @@ class RouteConfigurer(object):
                        self.__dlq_prep_processor,
                        self.__profile_test_failure_queue,
                        self.__file_test_result_queue, self.__test_queue,
-                       self.__test_processor))
+                       self.__test_processor, self.__iquod_flag_processor))
 
     self.__eip_context.add_route_builder(
       OutputRoute(self.__eip_context, self.__file_test_result_queue,
