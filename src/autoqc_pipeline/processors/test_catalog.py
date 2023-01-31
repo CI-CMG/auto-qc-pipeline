@@ -60,11 +60,10 @@ import qctests.WOD_gradient_check as WOD_gradient_check
 import qctests.WOD_range_check as WOD_range_check
 
 class TestInfo(object):
-  def __init__(self, name, module, test_sets, has_parameters = False):
+  def __init__(self, name, module, test_sets):
     self.__name = name
     self.__module = module
     self.__test_sets = test_sets
-    self.__has_parameters = has_parameters
 
   @property
   def test_sets(self):
@@ -75,11 +74,10 @@ class TestInfo(object):
     return self.__name
 
   def load_parameters(self, parameter_store):
-    if self.__has_parameters:
-      self.__module.loadParameters(parameter_store)
+    self.__module.loadParameters(parameter_store)
 
-  def test(self, profile, parameter_store):
-    return self.__module.test(profile, parameter_store)
+  def test(self, profile, parameter_store, data_store):
+    return self.__module.test(profile, parameter_store, data_store)
 
 HTPR = 'HTPR'
 Comp = 'Comp'
@@ -123,11 +121,11 @@ tests = [
   TestInfo('CSIRO_surface_spikes', CSIRO_surface_spikes, {}),
   TestInfo('CSIRO_wire_break', CSIRO_wire_break, {HTPR}),
   TestInfo('EN_background_available_check', EN_background_available_check, {HTPR, Comp}),
-  TestInfo('EN_background_check', EN_background_check, {LFPR}, has_parameters=True),
+  TestInfo('EN_background_check', EN_background_check, {LFPR}),
   TestInfo('EN_constant_value_check', EN_constant_value_check, {HTPR, Comp}),
   TestInfo('EN_increasing_depth_check', EN_increasing_depth_check, {Comp, LFPR}),
   TestInfo('EN_range_check', EN_range_check, {HTPR}),
-  TestInfo('EN_spike_and_step_check', EN_spike_and_step_check, {Comp, LFPR}, has_parameters=True),
+  TestInfo('EN_spike_and_step_check', EN_spike_and_step_check, {Comp, LFPR}),
   TestInfo('EN_spike_and_step_suspect', EN_spike_and_step_suspect, {HTPR}),
   TestInfo('EN_stability_check', EN_stability_check, {Comp, LFPR}),
 
@@ -140,21 +138,21 @@ tests = [
   ## Not needed for iquod flag determination
   # TestInfo('EN_track_check', EN_track_check, {}),
 
-  TestInfo('ICDC_aqc_01_level_order', ICDC_aqc_01_level_order, {HTPR, Comp, LFPR}, has_parameters=True),
+  TestInfo('ICDC_aqc_01_level_order', ICDC_aqc_01_level_order, {HTPR, Comp, LFPR}),
   TestInfo('ICDC_aqc_02_crude_range', ICDC_aqc_02_crude_range, {LFPR}),
   TestInfo('ICDC_aqc_04_max_obs_depth', ICDC_aqc_04_max_obs_depth, {}),
   TestInfo('ICDC_aqc_05_stuck_value', ICDC_aqc_05_stuck_value, {LFPR}),
   TestInfo('ICDC_aqc_06_n_temperature_extrema', ICDC_aqc_06_n_temperature_extrema, {HTPR}),
   TestInfo('ICDC_aqc_07_spike_check', ICDC_aqc_07_spike_check, {HTPR}),
   TestInfo('ICDC_aqc_08_gradient_check', ICDC_aqc_08_gradient_check, {HTPR, Comp}),
-  TestInfo('ICDC_aqc_09_local_climatology_check', ICDC_aqc_09_local_climatology_check, {HTPR}, has_parameters=True),
-  TestInfo('ICDC_aqc_10_local_climatology_check', ICDC_aqc_10_local_climatology_check, {HTPR}, has_parameters=True),
+  TestInfo('ICDC_aqc_09_local_climatology_check', ICDC_aqc_09_local_climatology_check, {HTPR}),
+  TestInfo('ICDC_aqc_10_local_climatology_check', ICDC_aqc_10_local_climatology_check, {HTPR}),
   TestInfo('IQUOD_bottom', IQUOD_bottom, {HTPR}),
   TestInfo('IQuOD_gross_range_check', IQuOD_gross_range_check, {HTPR, Comp, LFPR}),
   TestInfo('loose_location_at_sea', loose_location_at_sea, {LFPR}),
   TestInfo('minmax', minmax, {}),
   TestInfo('WOD_gradient_check', WOD_gradient_check, {}),
-  TestInfo('WOD_range_check', WOD_range_check, {Comp, LFPR}, has_parameters=True),
+  TestInfo('WOD_range_check', WOD_range_check, {Comp, LFPR}),
 ]
 
 class TestCatalog(object):

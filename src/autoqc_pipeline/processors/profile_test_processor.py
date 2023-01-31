@@ -1,14 +1,17 @@
+import logging
 import os
 
 from eipiphany_core.framework.base.processor import Processor
 
+from .dictionary_data_store import DictionaryDataStore
 from .test_catalog import TestCatalog
 
+logger = logging.getLogger(__name__)
 
 class ProfileTestProcessor(Processor):
 
   def __init__(self, auto_qc_home, filter):
-    self.__parameter_store = {}
+    self.__parameter_store = {'cache_test_in_store':True}
     self.__auto_qc_home = auto_qc_home
     self.__filter = filter
     self.__tests = TestCatalog().get_test_info()
@@ -28,8 +31,10 @@ class ProfileTestProcessor(Processor):
       cwd = os.getcwd()
       try:
         os.chdir(self.__auto_qc_home)
+        data_store = DictionaryDataStore()
         for test in self.__tests:
-          level_results = test.test(profile, self.__parameter_store).to_list()
+          logger.debug("Running " + test.name)
+          level_results = test.test(profile, self.__parameter_store, data_store).tolist()
           for depth in range(len(level_results)):
             if level_results[depth]:
               auto_qc_profile_test_result.profile_failures.add(test.name)
