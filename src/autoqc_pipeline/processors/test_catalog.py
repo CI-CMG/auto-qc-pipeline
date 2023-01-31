@@ -122,31 +122,39 @@ tests = [
   TestInfo('CSIRO_short_gradient', CSIRO_short_gradient, {HTPR}),
   TestInfo('CSIRO_surface_spikes', CSIRO_surface_spikes, {}),
   TestInfo('CSIRO_wire_break', CSIRO_wire_break, {HTPR}),
-  TestInfo('EN_background_available_check', EN_background_available_check, {HTPR, Comp}, has_parameters=True),
-  TestInfo('EN_background_check', EN_background_check, {LFPR}),
+  TestInfo('EN_background_available_check', EN_background_available_check, {HTPR, Comp}),
+  TestInfo('EN_background_check', EN_background_check, {LFPR}, has_parameters=True),
   TestInfo('EN_constant_value_check', EN_constant_value_check, {HTPR, Comp}),
   TestInfo('EN_increasing_depth_check', EN_increasing_depth_check, {Comp, LFPR}),
   TestInfo('EN_range_check', EN_range_check, {HTPR}),
-  TestInfo('EN_spike_and_step_check', EN_spike_and_step_check, {Comp, LFPR}),
+  TestInfo('EN_spike_and_step_check', EN_spike_and_step_check, {Comp, LFPR}, has_parameters=True),
   TestInfo('EN_spike_and_step_suspect', EN_spike_and_step_suspect, {HTPR}),
   TestInfo('EN_stability_check', EN_stability_check, {Comp, LFPR}),
-  TestInfo('EN_std_lev_bkg_and_buddy_check', EN_std_lev_bkg_and_buddy_check, {HTPR, LFPR}),
-  TestInfo('EN_track_check', EN_track_check, {}),
-  TestInfo('ICDC_aqc_01_level_order', ICDC_aqc_01_level_order, {HTPR, Comp, LFPR}),
+
+  # TODO re-enable this as it is needed for iquod flag
+  # Need to figure out how to make this more efficient.  It is exponentially computationally complex
+  # TestInfo('EN_std_lev_bkg_and_buddy_check', EN_std_lev_bkg_and_buddy_check, {HTPR, LFPR}),
+
+  ## Skip EN_track_check as this test checks multiple profiles which has multiple problems:
+  ## 1) memory inefficent 2) exponentionally complex 3) not compatible with profiles flowing through this pipeline
+  ## Not needed for iquod flag determination
+  # TestInfo('EN_track_check', EN_track_check, {}),
+
+  TestInfo('ICDC_aqc_01_level_order', ICDC_aqc_01_level_order, {HTPR, Comp, LFPR}, has_parameters=True),
   TestInfo('ICDC_aqc_02_crude_range', ICDC_aqc_02_crude_range, {LFPR}),
   TestInfo('ICDC_aqc_04_max_obs_depth', ICDC_aqc_04_max_obs_depth, {}),
   TestInfo('ICDC_aqc_05_stuck_value', ICDC_aqc_05_stuck_value, {LFPR}),
   TestInfo('ICDC_aqc_06_n_temperature_extrema', ICDC_aqc_06_n_temperature_extrema, {HTPR}),
   TestInfo('ICDC_aqc_07_spike_check', ICDC_aqc_07_spike_check, {HTPR}),
   TestInfo('ICDC_aqc_08_gradient_check', ICDC_aqc_08_gradient_check, {HTPR, Comp}),
-  TestInfo('ICDC_aqc_09_local_climatology_check', ICDC_aqc_09_local_climatology_check, {HTPR}),
-  TestInfo('ICDC_aqc_10_local_climatology_check', ICDC_aqc_10_local_climatology_check, {HTPR}),
+  TestInfo('ICDC_aqc_09_local_climatology_check', ICDC_aqc_09_local_climatology_check, {HTPR}, has_parameters=True),
+  TestInfo('ICDC_aqc_10_local_climatology_check', ICDC_aqc_10_local_climatology_check, {HTPR}, has_parameters=True),
   TestInfo('IQUOD_bottom', IQUOD_bottom, {HTPR}),
   TestInfo('IQuOD_gross_range_check', IQuOD_gross_range_check, {HTPR, Comp, LFPR}),
   TestInfo('loose_location_at_sea', loose_location_at_sea, {LFPR}),
   TestInfo('minmax', minmax, {}),
   TestInfo('WOD_gradient_check', WOD_gradient_check, {}),
-  TestInfo('WOD_range_check', WOD_range_check, {Comp, LFPR}),
+  TestInfo('WOD_range_check', WOD_range_check, {Comp, LFPR}, has_parameters=True),
 ]
 
 class TestCatalog(object):

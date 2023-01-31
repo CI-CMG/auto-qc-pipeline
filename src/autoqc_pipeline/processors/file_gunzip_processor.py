@@ -18,7 +18,6 @@ class FileGunzipProcessor(Processor):
     self.__gunzip_directory = gunzip_directory
 
   def process(self, exchange):
-    process = multiprocessing.current_process()
     file_message = exchange.body
     gzip_path = file_message.gzip_file_path
     rel_path_split = os.path.split(os.path.relpath(gzip_path, start=self.__wod_directory))
@@ -26,8 +25,8 @@ class FileGunzipProcessor(Processor):
     Path(os.path.split(wod_file_path)[0]).mkdir( parents=True, exist_ok=True )
     file_message.wod_file_path = wod_file_path
     now = datetime.now().strftime("%Y-%m-%dT%H:%M:%M.%f")
-    logger.info("gunzip start {0} {1} {2}".format(now, process.pid, gzip_path))
+    logger.info("gunzip start {0} {1}".format(now, gzip_path))
     with gzip.open(gzip_path, 'rb') as f_in:
       with open(wod_file_path, 'wb') as f_out:
         shutil.copyfileobj(f_in, f_out)
-    logger.info("gunzip end {0} {1} {2}".format(now, process.pid, gzip_path))
+    logger.info("gunzip end {0} {1}".format(now, gzip_path))

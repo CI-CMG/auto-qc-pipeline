@@ -6,5 +6,9 @@ shapely==2.0.0
 oceansdb==0.8.14
 netCDF4==1.6.2
 gsw==3.6.16.post1
+cotede==0.23.6
+netCDF4==1.5.1.2
+xarray==0.16.1
+matplotlib==3.6.3
 eipiphany-file==0.1.0.dev20230129190416
 eipiphany-file==0.1.0.dev20230129190416
