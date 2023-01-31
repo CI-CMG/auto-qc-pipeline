@@ -32,7 +32,7 @@ if __name__ == '__main__':
   gunzip_queue = JoinableQueue(maxsize=1000)
   test_queue = JoinableQueue(maxsize=1000)
   gunzip_processor = GunzipProcessor(wod_directory, gunzip_directory)
-  wodpy_processor = WodpyProcessor(test_queue)
+
   test_processor = TestProcessor()
   test_result_processor = SimpleTimestampProcessor()
   message_prep_processor = MessagePrepProcessor()
@@ -45,12 +45,13 @@ if __name__ == '__main__':
 
   with Manager() as manager:
     file_controller = FileController(manager)
-    agregation_strategy = FileDoneAggregationStrategy(file_controller)
+    wodpy_processor = WodpyProcessor(test_queue, file_controller)
+    aggregation_strategy = FileDoneAggregationStrategy(file_controller)
     test_route = TestRoute(wod_directory, gunzip_directory, gunzip_queue,
                            test_queue, message_prep_processor, gunzip_processor,
                            wodpy_processor, test_processor, test_result_processor,
                            profile_filter, aggregator_queue, correlation_expression,
-                           agregation_strategy, completion_expression_list, manager)
+                           aggregation_strategy, completion_expression_list, manager)
     test_route.build()
     joiners = test_route.start()
 

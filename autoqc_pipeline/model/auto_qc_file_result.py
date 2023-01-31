@@ -47,14 +47,14 @@ class AutoQcFileResult(object):
     return self
 
   @property
-  def is_complete(self):
+  def complete(self):
     return self.__complete
 
-  @is_complete.setter
-  def is_complete(self):
-    self.set_is_complete()
+  @complete.setter
+  def complete(self):
+    self.set_complete()
 
-  def set_is_complete(self):
+  def set_complete(self):
     self.__complete = True
     return self
 

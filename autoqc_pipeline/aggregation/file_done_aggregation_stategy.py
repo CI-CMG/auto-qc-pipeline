@@ -22,15 +22,15 @@ class FileDoneAggregationStrategy(AggregationStrategy):
 
   def update_counts(self, file_result, test_context):
     file_result.increment_total_casts()
-    if(self.__file_controller.on_done_cast(test_context.get_file_path_prefix(), test_context.get_cast().get_cast_number())):
-      file_result.set_complete()
+    if(self.__file_controller.on_done_cast(test_context.file_path_prefix, test_context.profile.uid())):
+      file_result.set_is_complete()
 
-    failure_counts = file_result.get_failure_counts()
-    for test_name in test_context.get_cast_test_result().get_cast_failures():
-      count = failure_counts.get(test_name)
-      if count is None:
-        count = 0
-      failure_counts[test_name] = count + 1
-    file_result.set_failure_counts(failure_counts)
-    if test_context.get_cast_test_result().get_exception() is not None:
-      file_result.set_exceptions(file_result.get_exceptions() + 1)
+    # failure_counts = file_result.get_failure_counts()
+    # for test_name in test_context.get_cast_test_result().get_cast_failures():
+    #   count = failure_counts.get(test_name)
+    #   if count is None:
+    #     count = 0
+    #   failure_counts[test_name] = count + 1
+    # file_result.set_failure_counts(failure_counts)
+    # if test_context.get_cast_test_result().get_exception() is not None:
+    #   file_result.set_exceptions(file_result.get_exceptions() + 1)

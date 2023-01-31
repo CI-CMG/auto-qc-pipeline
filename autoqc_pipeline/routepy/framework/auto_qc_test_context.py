@@ -3,5 +3,5 @@ import abc
 class AutoQcTestContext(metaclass=abc.ABCMeta):
 
   @abc.abstractmethod
-  def getCast(self):
+  def get_cast(self):
     pass
