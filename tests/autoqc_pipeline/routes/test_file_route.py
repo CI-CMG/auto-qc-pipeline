@@ -1,3 +1,5 @@
+import os
+
 from eipiphany_core.framework.base.eipiphany_context import EipiphanyContext
 from eipiphany_core.framework.test_support.eipiphany_test_context import \
   EipiphanyTestContext
@@ -43,22 +45,26 @@ class TestFileRoute(object):
 #   }
 # }
 
+
+
+
   def test_consume_file(self):
-    wod_directory = 'test-resources/wod18'
-    gunzip_directory = 'gunzip-dir'
-    output_directory = 'test-dir'
-    auto_qc_home = "../AutoQC"
+    project_root = os.environ['AUTO_QC_PIPELINE_ROOT']
+
+
+    wod_directory = os.path.join(project_root, 'test-resources', 'wod18')
+    gunzip_directory = os.path.join(project_root, 'gunzip-dir')
+    output_directory = os.path.join(project_root, 'test-dir')
+    auto_qc_home = os.path.join(project_root, "..", "AutoQC")
     concurrent_unzip_files = 2
     test_concurrency = 2
 
     done_file = 'test-resources/wod18/MRB/OBS/MRBO2022.gz.autoqc'
 
-    # with EipiphanyTestContext(EipiphanyContext()) as eip_context:
-    #   route_config = RouteConfigurer(eip_context, wod_directory, auto_qc_home,
-    #                                  gunzip_directory, output_directory,
-    #                                  concurrent_unzip_files, test_concurrency)
-    #   route_config.configure()
-    #
-    #   file_cntroller = route_config.file_controller
-    #
-    #   eip_context.start()
+    with EipiphanyTestContext(EipiphanyContext()) as eip_context:
+      route_config = RouteConfigurer(eip_context, wod_directory, auto_qc_home,
+                                     gunzip_directory, output_directory,
+                                     concurrent_unzip_files, test_concurrency)
+      route_config.configure()
+
+      eip_context.start()

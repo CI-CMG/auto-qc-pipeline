@@ -9,9 +9,9 @@ from ..model.test_message import TestMessage
 
 class WodpyProfileProcessor(Processor):
 
-  def __init__(self, test_queue, *args, **kw):
+  def __init__(self, eip_context, *args, **kw):
     super().__init__(*args, **kw)
-    self.__test_queue = test_queue
+    self.__test_queue_producer = eip_context.get_endpoint('seda:test-queue')
 
 
   def process(self, exchange):
@@ -26,9 +26,8 @@ class WodpyProfileProcessor(Processor):
           fid.seek(end)
           last = profile.is_last_profile_in_file(fid)
           auto_qc_test_message = TestMessage(file_message.file_path_prefix, profile, last)
-          self.__test_queue.put(Exchange(auto_qc_test_message), True)
+          self.__test_queue_producer.process(Exchange(auto_qc_test_message), None)
           if last:
             break
-
     finally:
       os.remove(exchange.body.wod_file_path)

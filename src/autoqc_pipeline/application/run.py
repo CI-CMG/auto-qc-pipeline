@@ -1,7 +1,7 @@
 import os
 import warnings
 
-from eipiphany_core.framework.base.eipiphany_context import EipiphanyContext
+from eipiphany_core.framework.base.eip_context import EipContext
 
 from autoqc_pipeline.application.route_configurer import RouteConfigurer
 
@@ -15,7 +15,7 @@ if __name__ == '__main__':
   concurrent_unzip_files = 3
   test_concurrency = 16
 
-  with EipiphanyContext() as eip_context:
+  with EipContext() as eip_context:
     route_config = RouteConfigurer(eip_context, wod_directory, auto_qc_home,
                                    gunzip_directory, output_directory,
                                    concurrent_unzip_files, test_concurrency)
