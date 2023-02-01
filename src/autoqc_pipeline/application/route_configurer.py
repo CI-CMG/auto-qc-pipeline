@@ -57,7 +57,7 @@ class RouteConfigurer(object):
     self.__file_path_corr_exp = FilePathPrefixCorrelationExpression()
     self.__file_summary_agg_strat = FileSummaryAggregationStrategy(self.__file_controller)
     self.__file_summary_comp_pred = FileDoneCompletionPredicate()
-    self.__aggregator = Aggregator(self.__file_path_corr_exp, self.__file_summary_agg_strat, [self.__file_summary_comp_pred])
+    self.__aggregator = Aggregator(eip_context, self.__file_path_corr_exp, self.__file_summary_agg_strat, [self.__file_summary_comp_pred])
 
   def configure(self):
     self.__eip_context.add_route_builder(
