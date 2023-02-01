@@ -17,7 +17,7 @@ class OutputRoute(RouteBuilder):
   def __init__(self, eip_context, file_test_result_queue,
       profile_test_failure_queue, error_queue, test_concurrency,
       file_controller, save_summary_queue, summary_save_processor,
-      profile_failure_save_processor, *args, **kw):
+      profile_failure_save_processor, aggregator, *args, **kw):
     super().__init__(*args, **kw)
     self.__eip_context = eip_context
     self.__file_test_result_queue = file_test_result_queue
@@ -28,16 +28,13 @@ class OutputRoute(RouteBuilder):
     self.__summary_save_processor = summary_save_processor
     self.__profile_failure_save_processor = profile_failure_save_processor
     self.__profile_test_failure_queue = profile_test_failure_queue
+    self.__aggregator = aggregator
 
   def build(self):
-    self._from(QueueSource(self.__file_test_result_queue,
-                           concurrent_consumers=self.__test_concurrency)) \
-      .aggregate(Aggregator(self.__eip_context,
-                            FilePathPrefixCorrelationExpression(),
-                            FileSummaryAggregationStrategy(
-                              self.__file_controller),
-                            [FileDoneCompletionPredicate()])) \
-      .to(QueueEndpoint(self.__save_summary_queue, block_when_full=True))
+    self._from(
+      QueueSource(self.__file_test_result_queue, concurrent_consumers=self.__test_concurrency)) \
+        .aggregate(self.__aggregator) \
+        .to(QueueEndpoint(self.__save_summary_queue, block_when_full=True))
 
     self._from(QueueSource(self.__save_summary_queue)) \
       .to(self.__summary_save_processor)

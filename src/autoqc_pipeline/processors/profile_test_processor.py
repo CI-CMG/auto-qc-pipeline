@@ -4,26 +4,32 @@ import os
 from eipiphany_core.framework.base.processor import Processor
 
 from .dictionary_data_store import DictionaryDataStore
-from .test_catalog import TestCatalog
 
 logger = logging.getLogger(__name__)
 
 class ProfileTestProcessor(Processor):
 
-  def __init__(self, auto_qc_home, filter):
+  def __init__(self, auto_qc_home, filter, test_catalog):
     self.__parameter_store = {'cache_test_in_store':True}
     self.__auto_qc_home = auto_qc_home
     self.__filter = filter
-    self.__tests = TestCatalog().get_test_info()
+    self.__initialized = False
+    self.__test_catalog = test_catalog
+
+  # This has to be called in the process method.  Calling in the constructor causes issues with multiprocessing
+  def __initialize(self):
     cwd = os.getcwd()
     try:
-      os.chdir(auto_qc_home)
-      for test in self.__tests:
+      os.chdir(self.__auto_qc_home)
+      for test in self.__test_catalog.get_test_info():
         test.load_parameters(self.__parameter_store)
     finally:
       os.chdir(cwd)
+    self.__initialized = True
 
   def process(self, exchange):
+    if not self.__initialized:
+      self.__initialize()
     test_message = exchange.body
     if self.__filter.filter(exchange):
       profile = test_message.profile

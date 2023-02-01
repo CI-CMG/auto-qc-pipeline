@@ -5,11 +5,11 @@ from .test_catalog import TestCatalog, HTPR, Comp, LFPR
 
 class IquodFlagProcessor(Processor):
 
-  def __init__(self):
-    test_catalog = TestCatalog()
-    self.__htpr_tests = test_catalog.get_test_names_for_set(HTPR)
-    self.__comp_tests = test_catalog.get_test_names_for_set(Comp)
-    self.__lfpr_tests = test_catalog.get_test_names_for_set(LFPR)
+  def __init__(self, test_catalog):
+    self.__test_catalog = test_catalog
+    self.__htpr_tests = self.__test_catalog.get_test_names_for_set(HTPR)
+    self.__comp_tests = self.__test_catalog.get_test_names_for_set(Comp)
+    self.__lfpr_tests = self.__test_catalog.get_test_names_for_set(LFPR)
 
   def process(self, exchange):
     test_message = exchange.body

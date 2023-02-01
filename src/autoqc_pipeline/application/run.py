@@ -3,7 +3,7 @@ import warnings
 
 from eipiphany_core.framework.base.eipiphany_context import EipiphanyContext
 
-from .route_configurer import RouteConfigurer
+from autoqc_pipeline.application.route_configurer import RouteConfigurer
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 

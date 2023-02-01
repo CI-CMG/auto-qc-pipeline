@@ -23,7 +23,7 @@ class ProfileTestRoute(RouteBuilder):
 
   def build(self):
 
-    self._error_handler(DeadLetterChannel(QueueEndpoint(self.__error_queue, block_when_full=True)).on_prepare_failure(self.__dlq_prep_processor))
+    # self._error_handler(DeadLetterChannel(QueueEndpoint(self.__error_queue, block_when_full=True)).on_prepare_failure(self.__dlq_prep_processor))
 
     # todo add choice to eipiphany to use filter in route definition instead of in test processor
     self._from(
