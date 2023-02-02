@@ -17,4 +17,4 @@ class DictionaryDataStore(TestDataStore):
     self.__data[key] = field_dict
 
   def get(self, uid, key):
-    self.__data.get(key)
+    return self.__data.get(key)
