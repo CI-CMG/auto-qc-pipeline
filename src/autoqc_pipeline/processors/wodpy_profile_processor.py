@@ -19,11 +19,7 @@ class WodpyProfileProcessor(Processor):
     try:
       with open(file_message.wod_file_path, 'r') as fid:
         while True:
-          start = fid.tell()
           profile = wod.WodProfile(fid)
-          end = fid.tell()
-          fid.seek(start)
-          fid.seek(end)
           last = profile.is_last_profile_in_file(fid)
           auto_qc_test_message = TestMessage(file_message.file_path_prefix, profile, last)
           self.__test_queue_producer.process(Exchange(auto_qc_test_message), None)
