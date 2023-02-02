@@ -21,6 +21,10 @@ class RouteConfigurer(object):
     self.__test_concurrency = test_concurrency
     self.__file_controller = FileController(eip_context.manager)
 
+  @property
+  def file_controller(self):
+    return self.__file_controller
+
   def configure(self):
     self.__eip_context.register_endpoint(FileEndpoint(self.__wod_directory, FileConfiguration().set_directory(self.__wod_directory).set_recursive(True).set_include_ext(['gz']).set_done_file_ext('autoqc')))
     self.__eip_context.register_endpoint(SedaEndpoint('gunzip-queue', SedaConfiguration().set_concurrent_consumers(self.__concurrent_unzip_files)))

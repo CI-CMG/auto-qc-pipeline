@@ -31,20 +31,22 @@ class ProfileTestProcessor(Processor):
     if not self.__initialized:
       self.__initialize()
     test_message = exchange.body
+    print(test_message.profile.uid())
     if self.__filter.filter(exchange):
       profile = test_message.profile
-      auto_qc_profile_test_result = test_message.profile_test_result
+      profile_test_result = test_message.profile_test_result
       cwd = os.getcwd()
       try:
         os.chdir(self.__auto_qc_home)
         data_store = DictionaryDataStore()
-        for test in self.__tests:
-          logger.debug("Running " + test.name)
+        for test in self.__test_catalog.get_test_info():
+          print("Running " + test.name)
+          # logger.debug("Running " + test.name)
           level_results = test.test(profile, self.__parameter_store, data_store).tolist()
           for depth in range(len(level_results)):
             if level_results[depth]:
-              auto_qc_profile_test_result.profile_failures.add(test.name)
-              auto_qc_profile_test_result.depth_failures[depth].add(test.name)
+              profile_test_result.profile_failures.add(test.name)
+              profile_test_result.depth_failures[depth].add(test.name)
       finally:
         os.chdir(cwd)
     else:
