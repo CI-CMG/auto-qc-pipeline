@@ -47,6 +47,6 @@ class RouteConfigurer(object):
     self.__eip_context.register_endpoint(SedaEndpoint('file-test-result-queue'))
     self.__eip_context.register_endpoint(SedaEndpoint('save-summary-queue'))
 
-    self.__eip_context.add_route_builder(FileRoute(self.__wod_directory, self.__gunzip_directory))
-    self.__eip_context.add_route_builder(ProfileTestRoute(self.__auto_qc_home, self.__profile_test_processor, self.__test_catalog))
+    self.__eip_context.add_route_builder(FileRoute(self.__wod_directory, self.__gunzip_directory, self.__file_controller))
+    self.__eip_context.add_route_builder(ProfileTestRoute(self.__auto_qc_home, self.__profile_test_processor, self.__test_catalog, self.__file_controller))
     self.__eip_context.add_route_builder(OutputRoute(self.__output_directory, self.__file_controller))

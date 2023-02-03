@@ -39,7 +39,8 @@ class ProfileTestProcessor(Processor):
         os.chdir(self.__auto_qc_home)
         data_store = DictionaryDataStore()
         for test in self.__test_catalog.get_test_info():
-          logger.debug("Running " + test.name)
+          print ("Running " + test.name)
+          # logger.debug("Running " + test.name)
           level_results = test.test(profile, self.__parameter_store, data_store).tolist()
           for depth in range(len(level_results)):
             if level_results[depth]:

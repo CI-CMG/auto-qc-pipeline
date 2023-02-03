@@ -7,10 +7,11 @@ from ..processors.wodpy_profile_processor import WodpyProfileProcessor
 
 class FileRoute(RouteBuilder):
 
-  def __init__(self, wod_directory, gunzip_directory, *args, **kw):
+  def __init__(self, wod_directory, gunzip_directory, file_controller, *args, **kw):
     super().__init__(*args, **kw)
     self.__wod_directory = wod_directory
     self.__gunzip_directory = gunzip_directory
+    self.__file_controller = file_controller
 
   def build(self, eip_context):
     self._from(eip_context, 'file:' + self.__wod_directory) \
@@ -19,4 +20,4 @@ class FileRoute(RouteBuilder):
 
     self._from(eip_context, 'seda:gunzip-queue')\
       .process(FileGunzipProcessor(self.__wod_directory, self.__gunzip_directory))\
-      .process(WodpyProfileProcessor(eip_context))
+      .process(WodpyProfileProcessor(eip_context, self.__file_controller))

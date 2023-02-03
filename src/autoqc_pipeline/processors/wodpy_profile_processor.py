@@ -24,7 +24,7 @@ class WodpyProfileProcessor(Processor):
         while True:
           profile = wod.WodProfile(fid)
           last = profile.is_last_profile_in_file(fid)
-          self.__file_controller.on_new_cast(file_path_prefix, profile.uid(), last)
+          self.__file_controller.on_new_profile(file_path_prefix, profile.uid(), last)
           auto_qc_test_message = TestMessage(file_message.file_path_prefix, profile, last)
           self.__test_queue_producer.process(Exchange(auto_qc_test_message), None)
           if last:
