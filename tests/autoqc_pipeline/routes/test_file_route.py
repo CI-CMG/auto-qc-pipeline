@@ -92,14 +92,14 @@ class TestFileRoute(object):
                                        concurrent_unzip_files, test_concurrency)
         route_config.configure()
 
-        eip_context.mock_endpoint_and_skip('seda:file-test-result-queue', expected_message_count=2)
-        eip_context.mock_endpoint_and_skip('seda:profile-test-failure-queue', expected_message_count=2)
+        eip_context.mock_endpoint_and_skip('seda:file-test-result-queue', expected_message_count=3)
+        eip_context.mock_endpoint_and_skip('seda:profile-test-failure-queue', expected_message_count=3)
 
         eip_context.start_with_trigger(Process(target=touch, args=(trigger_file,)))
 
         exchanges = eip_context.get_endpoint('seda:file-test-result-queue').exchanges
 
-        assert len(exchanges) == 2
+        assert len(exchanges) == 3
 
     finally:
       if os.path.exists(trigger_file):

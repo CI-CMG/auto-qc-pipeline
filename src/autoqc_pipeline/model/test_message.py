@@ -17,7 +17,8 @@ class ProfileTestResult(object):
   def depth_failures(self):
     return self.__depth_failures
 
-  def is_failed(self):
+  @property
+  def failed(self):
     return len(self.__profile_failures) or self.exception
 
 

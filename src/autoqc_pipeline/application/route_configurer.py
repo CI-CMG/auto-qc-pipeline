@@ -3,6 +3,9 @@ from eipiphany_file.component.file_endpoint import FileEndpoint
 from eipiphany_seda.component.seda_configuration import SedaConfiguration
 from eipiphany_seda.component.seda_endpoint import SedaEndpoint
 
+from ..filters.pathological_profile_filter import PathologicalProfilesFilter
+from ..processors.profile_test_processor import ProfileTestProcessor
+from ..processors.test_catalog import TestCatalog
 from ..routes.file_route import FileRoute
 from ..routes.output_route import OutputRoute
 from ..routes.profile_test_route import ProfileTestRoute
@@ -20,10 +23,20 @@ class RouteConfigurer(object):
     self.__concurrent_unzip_files = concurrent_unzip_files
     self.__test_concurrency = test_concurrency
     self.__file_controller = FileController(eip_context.manager)
+    self.__test_catalog = TestCatalog()
+    self.__profile_test_processor = ProfileTestProcessor(self.__auto_qc_home, PathologicalProfilesFilter(), self.__test_catalog)
 
   @property
   def file_controller(self):
     return self.__file_controller
+
+  @property
+  def profile_test_processor(self):
+    return self.__profile_test_processor
+
+  @profile_test_processor.setter
+  def profile_test_processor(self, value):
+    self.__profile_test_processor = value
 
   def configure(self):
     self.__eip_context.register_endpoint(FileEndpoint(self.__wod_directory, FileConfiguration().set_directory(self.__wod_directory).set_recursive(True).set_include_ext(['gz']).set_done_file_ext('autoqc')))
@@ -35,5 +48,5 @@ class RouteConfigurer(object):
     self.__eip_context.register_endpoint(SedaEndpoint('save-summary-queue'))
 
     self.__eip_context.add_route_builder(FileRoute(self.__wod_directory, self.__gunzip_directory))
-    self.__eip_context.add_route_builder(ProfileTestRoute(self.__auto_qc_home))
+    self.__eip_context.add_route_builder(ProfileTestRoute(self.__auto_qc_home, self.__profile_test_processor, self.__test_catalog))
     self.__eip_context.add_route_builder(OutputRoute(self.__output_directory, self.__file_controller))
