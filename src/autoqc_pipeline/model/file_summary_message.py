@@ -21,6 +21,10 @@ class FileSummaryMessage(object):
     return self.__total_profiles
 
   @property
+  def is_complete(self):
+    return self.complete
+
+  @property
   def exception_count(self):
     return self.__exception_count
 
@@ -33,3 +37,13 @@ class FileSummaryMessage(object):
   def get_summary_file(self):
     return self.__file_path_prefix + "-summary.json"
 
+  def __str__(self):
+    return 'AutoQcFileResult:' \
+           '{{' \
+           'file_path_prefix={},' \
+           'total_casts={},' \
+           '}}' \
+      .format(
+      self.__file_path_prefix,
+      self.__total_casts
+    )

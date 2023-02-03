@@ -1,21 +1,3 @@
-
-class ProfileProcessingContext(object):
-
-  def __init__(self):
-    self.__profiles = []
-    self.__complete = False
-
-  @property
-  def profiles(self):
-    return self.__profiles
-
-  @property
-  def complete(self):
-    return self.__complete
-
-  def set_complete(self):
-    self.__complete = True
-
 class FileController(object):
 
   def __init__(self, manager):
@@ -39,7 +21,7 @@ class FileController(object):
   def on_new_file(self, file_path_prefix):
     self.__lock.acquire()
     try:
-      self.__profiles_in_flight[file_path_prefix] = ProfileProcessingContext()
+      self.__profiles_in_flight[file_path_prefix] = self.ProfileProcessingContext()
     finally:
       self.__lock.release()
 
@@ -50,7 +32,8 @@ class FileController(object):
       if context is not None:
         context.profiles.append(profile_num)
       if last:
-        context.set_complete()
+        context.set_is_complete()
+      self.__profiles_in_flight[file_path_prefix] = context
     finally:
       self.__lock.release()
 
@@ -61,14 +44,39 @@ class FileController(object):
       if context is None:
         return True
       done = False
-      context.casts.remove(profile_num)
-      if context.is_complete and bool(context.profiles):
+      len1 = len(context.profiles)
+      context.profiles.remove(profile_num)
+      print("{} - 1 = {}".format(len1, len(context.profiles)))
+      self.__profiles_in_flight[file_path_prefix] = context
+      if not context.profiles:
+        print('test')
+      if context.is_complete and not context.profiles:
         done = True
         self.__profiles_in_flight.pop(file_path_prefix, None)
       return done
     finally:
       self.__lock.release()
 
+  class ProfileProcessingContext(object):
 
+    def __init__(self):
+      self.__profiles = []
+      self.__complete = False
+
+    @property
+    def profiles(self):
+      return self.__profiles
+
+    @property
+    def is_complete(self):
+      return self.__complete
+
+    @is_complete.setter
+    def is_complete(self):
+      self.set_is_complete()
+
+    def set_is_complete(self):
+      self.__complete = True
+      return self
 
 
