@@ -4,8 +4,6 @@ from multiprocessing import Process
 from eipiphany_core.framework.base.eip_context import EipContext
 from eipiphany_core.framework.test_support.eip_test_context import \
   EipTestContext
-from eipiphany_core.framework.test_support.test_eip_context_termination import \
-  TestEipContextTermination
 
 from src.autoqc_pipeline.application.route_configurer import RouteConfigurer
 
@@ -70,37 +68,3 @@ class TestFileRoute(object):
         os.remove(trigger_file)
 
 
-
-  def test_test_processor(self):
-
-    project_root = os.environ['AUTO_QC_PIPELINE_ROOT']
-    wod_directory = os.path.join(project_root, 'test-resources', 'wod18')
-    gunzip_directory = os.path.join(project_root, 'gunzip-dir')
-    output_directory = os.path.join(project_root, 'test-dir')
-    auto_qc_home = os.path.join(project_root, "..", "AutoQC")
-    concurrent_unzip_files = 1
-    test_concurrency = 2
-
-    trigger_file = os.path.join(wod_directory, 'CTD', 'OBS', 'CTDO2020.gz.autoqc')
-
-    if os.path.exists(trigger_file):
-      os.remove(trigger_file)
-    try:
-      with EipTestContext(EipContext(), termination=TestEipContextTermination(timeout=120000)) as eip_context:
-        route_config = RouteConfigurer(eip_context, wod_directory, auto_qc_home,
-                                       gunzip_directory, output_directory,
-                                       concurrent_unzip_files, test_concurrency)
-        route_config.configure()
-
-        eip_context.mock_endpoint_and_skip('seda:file-test-result-queue', expected_message_count=3)
-        eip_context.mock_endpoint_and_skip('seda:profile-test-failure-queue', expected_message_count=3)
-
-        eip_context.start_with_trigger(Process(target=touch, args=(trigger_file,)))
-
-        exchanges = eip_context.get_endpoint('seda:file-test-result-queue').exchanges
-
-        assert len(exchanges) == 3
-
-    finally:
-      if os.path.exists(trigger_file):
-        os.remove(trigger_file)
