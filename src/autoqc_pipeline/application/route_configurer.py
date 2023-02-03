@@ -24,7 +24,7 @@ class RouteConfigurer(object):
     self.__test_concurrency = test_concurrency
     self.__file_controller = FileController(eip_context.manager)
     self.__test_catalog = TestCatalog()
-    self.__profile_test_processor = ProfileTestProcessor(self.__auto_qc_home, PathologicalProfilesFilter(), self.__test_catalog)
+    self.__profile_test_processor = ProfileTestProcessor(self.__auto_qc_home, self.__file_controller, PathologicalProfilesFilter(), self.__test_catalog)
 
   @property
   def file_controller(self):
@@ -48,5 +48,5 @@ class RouteConfigurer(object):
     self.__eip_context.register_endpoint(SedaEndpoint('save-summary-queue'))
 
     self.__eip_context.add_route_builder(FileRoute(self.__wod_directory, self.__gunzip_directory, self.__file_controller))
-    self.__eip_context.add_route_builder(ProfileTestRoute(self.__auto_qc_home, self.__profile_test_processor, self.__test_catalog, self.__file_controller))
+    self.__eip_context.add_route_builder(ProfileTestRoute(self.__auto_qc_home, self.__profile_test_processor, self.__test_catalog))
     self.__eip_context.add_route_builder(OutputRoute(self.__output_directory, self.__file_controller))

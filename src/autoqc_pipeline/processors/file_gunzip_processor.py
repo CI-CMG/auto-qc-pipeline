@@ -25,10 +25,8 @@ class FileGunzipProcessor(Processor):
     Path(os.path.split(wod_file_path)[0]).mkdir( parents=True, exist_ok=True )
     file_message.wod_file_path = wod_file_path
     now = datetime.now().strftime("%Y-%m-%dT%H:%M:%M.%f")
-    print("gunzip start {0} {1}".format(now, gzip_path))
-    # logger.info("gunzip start {0} {1}".format(now, gzip_path))
+    logger.info("gunzip start {0} {1}".format(now, gzip_path))
     with gzip.open(gzip_path, 'rb') as f_in:
       with open(wod_file_path, 'wb') as f_out:
         shutil.copyfileobj(f_in, f_out)
-    print("gunzip end {0} {1}".format(now, gzip_path))
-    # logger.info("gunzip end {0} {1}".format(now, gzip_path))
+    logger.info("gunzip end {0} {1}".format(now, gzip_path))
