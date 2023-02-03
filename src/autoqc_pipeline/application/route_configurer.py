@@ -24,7 +24,7 @@ class RouteConfigurer(object):
     self.__test_concurrency = test_concurrency
     self.__file_controller = FileController(eip_context.manager)
     self.__test_catalog = TestCatalog()
-    self.__profile_test_processor = ProfileTestProcessor(self.__auto_qc_home, self.__file_controller, PathologicalProfilesFilter(), self.__test_catalog)
+    self.__profile_test_processor = ProfileTestProcessor(self.__auto_qc_home, PathologicalProfilesFilter(), self.__test_catalog)
 
   @property
   def file_controller(self):
