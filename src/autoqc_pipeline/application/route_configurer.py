@@ -3,13 +3,15 @@ from eipiphany_file.component.file_endpoint import FileEndpoint
 from eipiphany_seda.component.seda_configuration import SedaConfiguration
 from eipiphany_seda.component.seda_endpoint import SedaEndpoint
 
-from ..filters.pathological_profile_filter import PathologicalProfilesFilter
 from ..processors.profile_test_processor import ProfileTestProcessor
 from ..processors.test_catalog import TestCatalog
 from ..routes.file_route import FileRoute
 from ..routes.output_route import OutputRoute
 from ..routes.profile_test_route import ProfileTestRoute
 from ..services.file_controller import FileController
+from ..services.geohash_service import GeohashService
+
+from profile_filter import ProfileFilter
 
 
 class RouteConfigurer(object):
@@ -24,7 +26,9 @@ class RouteConfigurer(object):
     self.__test_concurrency = test_concurrency
     self.__file_controller = FileController(eip_context.manager)
     self.__test_catalog = TestCatalog()
-    self.__profile_test_processor = ProfileTestProcessor(self.__auto_qc_home, PathologicalProfilesFilter(), self.__test_catalog)
+    self.__geohash_service = GeohashService(self.__gunzip_directory)
+    self.__filter = ProfileFilter()
+    self.__profile_test_processor = ProfileTestProcessor(self.__auto_qc_home, self.__filter, self.__test_catalog, self.__geohash_service, self.__gunzip_directory)
 
   @property
   def file_controller(self):
@@ -47,6 +51,6 @@ class RouteConfigurer(object):
     self.__eip_context.register_endpoint(SedaEndpoint('file-test-result-queue'))
     self.__eip_context.register_endpoint(SedaEndpoint('save-summary-queue'))
 
-    self.__eip_context.add_route_builder(FileRoute(self.__wod_directory, self.__gunzip_directory, self.__file_controller))
+    self.__eip_context.add_route_builder(FileRoute(self.__wod_directory, self.__gunzip_directory, self.__file_controller, self.__geohash_service, self.__filter))
     self.__eip_context.add_route_builder(ProfileTestRoute(self.__auto_qc_home, self.__profile_test_processor, self.__test_catalog))
-    self.__eip_context.add_route_builder(OutputRoute(self.__output_directory, self.__file_controller))
+    self.__eip_context.add_route_builder(OutputRoute(self.__output_directory, self.__file_controller, self.__gunzip_directory))

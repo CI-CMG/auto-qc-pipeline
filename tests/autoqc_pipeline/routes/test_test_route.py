@@ -1,5 +1,7 @@
 import os
 import logging.config
+import shutil
+
 import yaml
 from multiprocessing import Process
 
@@ -25,6 +27,16 @@ class ProfileNoOpTester(Processor):
     pass
 
 class TestTestRoute(object):
+
+  def setup_method(self, method):
+    project_root = os.environ['AUTO_QC_PIPELINE_ROOT']
+    gunzip_directory = os.path.join(project_root, 'gunzip-dir')
+    shutil.rmtree(gunzip_directory, ignore_errors=True)
+
+  def teardown_method(self, method):
+    project_root = os.environ['AUTO_QC_PIPELINE_ROOT']
+    gunzip_directory = os.path.join(project_root, 'gunzip-dir')
+    shutil.rmtree(gunzip_directory, ignore_errors=True)
 
   def test_error(self):
 

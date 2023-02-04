@@ -7,14 +7,16 @@ from ..aggregators.file_summary_completion_predicate import FileDoneCompletionPr
 from ..filters.test_failed_filter import TestFailedFilter
 from ..processors.file_summary_save_processor import FileSummarySaveProcessor
 from ..processors.profile_failure_save_processor import ProfileFailureSaveProcessor
+from ..processors.resource_cleanup_processor import ResourceCleanupProcessor
 
 
 class OutputRoute(RouteBuilder):
 
-  def __init__(self, output_directory, file_controller, *args, **kw):
+  def __init__(self, output_directory, file_controller, gunzip_directory, *args, **kw):
     super().__init__(*args, **kw)
     self.__output_directory = output_directory
     self.__file_controller = file_controller
+    self.__gunzip_directory = gunzip_directory
 
   def build(self, eip_context):
     self._from(eip_context, 'seda:profile-test-failure-queue') \
@@ -25,6 +27,7 @@ class OutputRoute(RouteBuilder):
       .to(eip_context, 'seda:save-summary-queue')
 
     self._from(eip_context, 'seda:save-summary-queue') \
+      .process(ResourceCleanupProcessor(self.__gunzip_directory))\
       .process(FileSummarySaveProcessor(self.__output_directory))
 
     self._from(eip_context, 'seda:profile-test-failure-queue') \

@@ -12,3 +12,4 @@ matplotlib==3.6.3
 eipiphany-file==0.1.0.dev20230203013852
 eipiphany-seda==0.1.0.dev20230203013852
 PyYAML
+git+https://github.com/wdm0006/pygeohash

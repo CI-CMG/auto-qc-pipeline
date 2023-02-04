@@ -23,11 +23,16 @@ class ProfileTestResult(object):
 
 
 class TestMessage(object):
-  def __init__(self, file_path_prefix, profile, last_profile):
+  def __init__(self, file_path_prefix, profile, last_profile, geohash):
     self.__profile = profile
     self.__profile_test_result = ProfileTestResult(profile)
     self.__file_path_prefix = file_path_prefix
     self.__last_profile = last_profile
+    self.__geohash = geohash
+
+  @property
+  def geohash(self):
+    return self.__geohash
 
   @property
   def profile(self):

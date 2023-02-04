@@ -14,7 +14,11 @@ class DictionaryDataStore(TestDataStore):
     pass
 
   def put(self, uid, key, field_dict):
-    self.__data[key] = field_dict
+    if not self.__data.get(uid):
+      self.__data[uid] = {}
+    self.__data[uid][key] = field_dict
 
   def get(self, uid, key):
-    return self.__data.get(key)
+    if not self.__data.get(uid):
+      return None
+    return self.__data[uid].get(key)
