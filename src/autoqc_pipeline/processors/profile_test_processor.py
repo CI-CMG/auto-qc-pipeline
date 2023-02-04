@@ -1,12 +1,13 @@
 import logging
 import os
+import time
 
 from eipiphany_core.framework.base.processor import Processor
 
 from .dictionary_data_store import DictionaryDataStore
 from .geohash_buddy_finder import GeohashBuddyFinder
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('autoqc.ProfileTestProcessor')
 
 class ProfileTestProcessor(Processor):
 
@@ -33,6 +34,7 @@ class ProfileTestProcessor(Processor):
   def process(self, exchange):
     if not self.__initialized:
       self.__initialize()
+    start = time.time()
     test_message = exchange.body
     profile = test_message.profile
     if self.__filter.assess_profile(profile):
@@ -44,7 +46,7 @@ class ProfileTestProcessor(Processor):
         parameter_store = self.__parameter_store.copy()
         parameter_store['buddy_finder'] = GeohashBuddyFinder(self.__geohash_service, self.__gunzip_directory, test_message)
         for test in self.__test_catalog.get_test_info():
-          logger.debug("Running " + test.name)
+          # logger.debug("Running " + test.name)
           level_results = test.test(profile, parameter_store, data_store).tolist()
           for depth in range(len(level_results)):
             if level_results[depth]:
@@ -54,3 +56,5 @@ class ProfileTestProcessor(Processor):
         os.chdir(cwd)
     else:
       test_message.profile_test_result.skipped = True
+    end = time.time()
+    print("profile {}/{} tested in {} sec.".format(test_message.file_path_prefix, str(profile.uid()), str(end - start)))

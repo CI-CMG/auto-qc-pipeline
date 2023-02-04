@@ -26,10 +26,23 @@ class ProfileNoOpTester(Processor):
   def process(self, exchange):
     pass
 
+
+
+
+
+logger = logging.getLogger('autoqc.Test')
+
 class TestTestRoute(object):
 
   def setup_method(self, method):
+
     project_root = os.environ['AUTO_QC_PIPELINE_ROOT']
+    with open(os.path.join(project_root, 'test-resources', 'logging.yaml'), 'r') as stream:
+      config = yaml.load(stream, Loader=yaml.FullLoader)
+      logging.config.dictConfig(config)
+
+    logger.debug("Testing")
+
     gunzip_directory = os.path.join(project_root, 'gunzip-dir')
     shutil.rmtree(gunzip_directory, ignore_errors=True)
 
@@ -40,13 +53,7 @@ class TestTestRoute(object):
 
   def test_error(self):
 
-
     project_root = os.environ['AUTO_QC_PIPELINE_ROOT']
-
-    with open(os.path.join(project_root, 'test-resources', 'logging.yaml'), 'r') as stream:
-      config = yaml.load(stream, Loader=yaml.FullLoader)
-
-    logging.config.dictConfig(config)
 
 
     wod_directory = os.path.join(project_root, 'test-resources', 'wod18')
@@ -95,11 +102,6 @@ class TestTestRoute(object):
 
   def test_no_failures(self):
     project_root = os.environ['AUTO_QC_PIPELINE_ROOT']
-
-    with open(os.path.join(project_root, 'test-resources', 'logging.yaml'), 'r') as stream:
-      config = yaml.load(stream, Loader=yaml.FullLoader)
-
-    logging.config.dictConfig(config)
 
 
     wod_directory = os.path.join(project_root, 'test-resources', 'wod18')
@@ -173,11 +175,6 @@ class TestTestRoute(object):
 
   def test_failures(self):
     project_root = os.environ['AUTO_QC_PIPELINE_ROOT']
-
-    with open(os.path.join(project_root, 'test-resources', 'logging.yaml'), 'r') as stream:
-      config = yaml.load(stream, Loader=yaml.FullLoader)
-
-    logging.config.dictConfig(config)
 
 
     wod_directory = os.path.join(project_root, 'test-resources', 'wod18')

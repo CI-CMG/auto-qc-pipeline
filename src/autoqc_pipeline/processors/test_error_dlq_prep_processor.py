@@ -3,7 +3,7 @@ import logging
 from eipiphany_core.framework.base.error_handler import ErrorHandler
 from eipiphany_core.framework.base.processor import Processor
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('autoqc.TestErrorDlqPrepProcessor')
 
 class TestErrorDlqPrepProcessor(Processor):
 
@@ -12,8 +12,8 @@ class TestErrorDlqPrepProcessor(Processor):
   def process(self, exchange):
     cause = exchange.get_header(ErrorHandler.EXCEPTION_CAUGHT)
     detail = exchange.get_header(ErrorHandler.EXCEPTION_CAUGHT_DETAIL)
-    logger.error("Exception in route (" + cause + ") " + detail)
-
+    # logger.error("Exception in route (" + cause + ") " + detail)
+    print("Exception in route (" + cause + ") " + detail)
 
     error_message = str(cause)
     if not error_message:
