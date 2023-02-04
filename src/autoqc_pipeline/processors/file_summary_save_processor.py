@@ -11,8 +11,10 @@ class FileSummarySaveProcessor(Processor):
 
   def process(self, exchange):
     file_summary = exchange.body
-    summary_file = os.path.join(self.__output_dir, file_summary.get_summary_file())
+    results_dir = os.path.join(self.__output_dir, file_summary.file_path_prefix + "-QC")
+    summary_file = os.path.join(results_dir, "summary.json")
     serialized = json.dumps(file_summary.__dict__)
     with open(summary_file, "w") as outfile:
       outfile.write(serialized)
+    print("finished {}".format(file_summary.file_path_prefix))
 

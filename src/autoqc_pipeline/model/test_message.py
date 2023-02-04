@@ -50,7 +50,4 @@ class TestMessage(object):
   def last_profile(self):
     return self.__last_profile
 
-  def get_failure_file_name(self):
-    return self.__file_path_prefix + "-failures-" + self.__profile.uid() + ".json"
-
 

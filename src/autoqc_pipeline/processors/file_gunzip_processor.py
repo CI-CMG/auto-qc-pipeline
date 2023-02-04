@@ -1,6 +1,5 @@
 import gzip
 import logging
-import multiprocessing
 import os
 import shutil
 from datetime import datetime
@@ -12,10 +11,11 @@ logger = logging.getLogger('autoqc.FileGunzipProcessor')
 
 class FileGunzipProcessor(Processor):
 
-  def __init__(self, wod_directory, gunzip_directory, *args, **kw):
+  def __init__(self, wod_directory, gunzip_directory, output_dir, *args, **kw):
     super().__init__(*args, **kw)
     self.__wod_directory = wod_directory
     self.__gunzip_directory = gunzip_directory
+    self.__output_dir = output_dir
 
   def process(self, exchange):
     file_message = exchange.body
@@ -32,3 +32,7 @@ class FileGunzipProcessor(Processor):
         shutil.copyfileobj(f_in, f_out)
     print("gunzip end {0} {1}".format(now, gzip_path))
     # logger.info("gunzip end {0} {1}".format(now, gzip_path))
+    results_dir = os.path.join(self.__output_dir, file_message.file_path_prefix + "-QC")
+    if os.path.exists(results_dir):
+      shutil.rmtree(results_dir, ignore_errors=True)
+    Path(results_dir).mkdir( parents=True, exist_ok=True )
