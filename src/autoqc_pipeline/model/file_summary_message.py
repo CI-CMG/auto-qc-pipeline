@@ -33,14 +33,3 @@ class FileSummaryMessage(object):
 
   def increment_exception_count(self):
     self.__exception_count += 1
-
-  def __str__(self):
-    return 'AutoQcFileResult:' \
-           '{{' \
-           'file_path_prefix={},' \
-           'total_casts={},' \
-           '}}' \
-      .format(
-      self.__file_path_prefix,
-      self.__total_casts
-    )
