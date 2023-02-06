@@ -45,10 +45,7 @@ class FileController(object):
         return True
       done = False
       context.profiles.remove(profile_num)
-      print("profile done: {}/{} ~ {}".format(file_path_prefix, profile_num, len(context.profiles)))
       self.__profiles_in_flight[file_path_prefix] = context
-      if not context.profiles:
-        print('test')
       if context.is_complete and not context.profiles:
         done = True
         self.__profiles_in_flight.pop(file_path_prefix, None)

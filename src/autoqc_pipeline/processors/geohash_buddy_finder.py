@@ -67,9 +67,9 @@ class GeohashBuddyFinder(BuddyFinder):
       ring = self.__geohash_service.get_hashes_to_check(
         self.__test_message.geohash, i)
       for geohash in ring:
-        buddy_pair = self.__check_hash_file(geohash, max_distance)
-        if not buddy_pair_in_ring or buddy_pair.buddy.distance < buddy_pair_in_ring.buddy.distance:
-          buddy_pair_in_ring = buddy_pair
+        bp = self.__check_hash_file(geohash, max_distance)
+        if bp and (not buddy_pair_in_ring or bp.buddy.distance < buddy_pair_in_ring.buddy.distance):
+          buddy_pair_in_ring = bp
       if buddy_pair_in_ring:
         break
 
