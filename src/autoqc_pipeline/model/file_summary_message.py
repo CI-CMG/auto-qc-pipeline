@@ -29,10 +29,10 @@ class FileSummaryMessage(object):
     return self.__exception_count
 
   def increment_total_profiles(self):
-    self.__exception_count += 1
+    self.__total_profiles += 1
 
   def increment_exception_count(self):
-    self.__total_profiles += 1
+    self.__exception_count += 1
 
   def __str__(self):
     return 'AutoQcFileResult:' \

@@ -38,6 +38,7 @@ class ProfileTestProcessor(Processor):
     test_message = exchange.body
     profile = test_message.profile
     if self.__filter.assess_profile(profile):
+      print("Testing profile {}/{}".format(test_message.file_path_prefix, str(profile.uid())))
       profile_test_result = test_message.profile_test_result
       cwd = os.getcwd()
       try:
@@ -55,6 +56,7 @@ class ProfileTestProcessor(Processor):
       finally:
         os.chdir(cwd)
     else:
+      print("Skipped profile {}/{}".format(test_message.file_path_prefix, str(profile.uid())))
       test_message.profile_test_result.skipped = True
     end = time.time()
     print("profile {}/{} tested in {} sec.".format(test_message.file_path_prefix, str(profile.uid()), str(end - start)))

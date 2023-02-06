@@ -36,3 +36,4 @@ class FileGunzipProcessor(Processor):
     if os.path.exists(results_dir):
       shutil.rmtree(results_dir, ignore_errors=True)
     Path(results_dir).mkdir( parents=True, exist_ok=True )
+    print("Created {0}".format(results_dir))

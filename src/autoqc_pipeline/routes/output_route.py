@@ -19,7 +19,7 @@ class OutputRoute(RouteBuilder):
     self.__gunzip_directory = gunzip_directory
 
   def build(self, eip_context):
-    self._from(eip_context, 'seda:profile-test-failure-queue') \
+    self._from(eip_context, 'seda:file-test-result-queue') \
       .aggregate(Aggregator(eip_context,
                             FilePathPrefixCorrelationExpression(),
                             FileSummaryAggregationStrategy(self.__file_controller),

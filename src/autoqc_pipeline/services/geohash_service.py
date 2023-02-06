@@ -66,7 +66,7 @@ class GeohashService(object):
     with open(hash_file, mode, newline='') as csvfile:
       writer = csv.writer(csvfile)
       writer.writerow([str(p.cruise()), str(p.uid()), str(offset), str(p.longitude()), str(p.latitude())])
-
+    print("append geohash: {}".format(hash_file))
 
   def get_geohash(self, lon, lat):
     return pgh.encode(latitude=lat, longitude=lon, precision=5)

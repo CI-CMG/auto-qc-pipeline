@@ -24,6 +24,7 @@ class FileSummaryAggregationStrategy(AggregationStrategy):
   def __update_counts(self, file_summary, test_message):
     file_summary.increment_total_profiles()
     if(self.__file_controller.on_done_profile(test_message.file_path_prefix, test_message.profile.uid())):
+      print("aggregate complete: {}".format(file_summary.file_path_prefix))
       file_summary.complete = True
 
     for test_name in test_message.profile_test_result.profile_failures:

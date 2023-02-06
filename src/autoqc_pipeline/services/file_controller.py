@@ -21,7 +21,7 @@ class FileController(object):
   def on_new_file(self, file_path_prefix):
     self.__lock.acquire()
     try:
-      self.__profiles_in_flight[file_path_prefix] = self.ProfileProcessingContext()
+      self.__profiles_in_flight[file_path_prefix] = ProfileProcessingContext()
     finally:
       self.__lock.release()
 
@@ -44,9 +44,8 @@ class FileController(object):
       if context is None:
         return True
       done = False
-      len1 = len(context.profiles)
       context.profiles.remove(profile_num)
-      print("{} - 1 = {}".format(len1, len(context.profiles)))
+      print("profile done: {}/{} ~ {}".format(file_path_prefix, profile_num, len(context.profiles)))
       self.__profiles_in_flight[file_path_prefix] = context
       if not context.profiles:
         print('test')
@@ -57,26 +56,26 @@ class FileController(object):
     finally:
       self.__lock.release()
 
-  class ProfileProcessingContext(object):
+class ProfileProcessingContext(object):
 
-    def __init__(self):
-      self.__profiles = []
-      self.__complete = False
+  def __init__(self):
+    self.__profiles = []
+    self.__complete = False
 
-    @property
-    def profiles(self):
-      return self.__profiles
+  @property
+  def profiles(self):
+    return self.__profiles
 
-    @property
-    def is_complete(self):
-      return self.__complete
+  @property
+  def is_complete(self):
+    return self.__complete
 
-    @is_complete.setter
-    def is_complete(self):
-      self.set_is_complete()
+  @is_complete.setter
+  def is_complete(self):
+    self.set_is_complete()
 
-    def set_is_complete(self):
-      self.__complete = True
-      return self
+  def set_is_complete(self):
+    self.__complete = True
+    return self
 
 
