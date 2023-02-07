@@ -207,7 +207,7 @@ class TestTestRoute(object):
 
         assert len(error_exchanges) == 0
         assert len(file_exchanges) == 3
-        assert len(file_exchanges) == 3
+        assert len(test_exchanges) == 3
 
         assert len(file_exchanges[0].body.profile_test_result.depth_failures) == 4761
         assert len(test_exchanges[0].body.profile_test_result.depth_failures) == 4761

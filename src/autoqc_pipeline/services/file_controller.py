@@ -14,7 +14,8 @@ class FileController(object):
   def get_context(self, file_path_prefix):
     self.__lock.acquire()
     try:
-      self.__profiles_in_flight.get(file_path_prefix)
+      context = self.__profiles_in_flight.get(file_path_prefix)
+      return context
     finally:
       self.__lock.release()
 
@@ -32,7 +33,7 @@ class FileController(object):
       if context is not None:
         context.profiles.append(profile_num)
       if last:
-        context.set_is_complete()
+        context.set_complete()
       self.__profiles_in_flight[file_path_prefix] = context
     finally:
       self.__lock.release()
@@ -46,7 +47,7 @@ class FileController(object):
       done = False
       context.profiles.remove(profile_num)
       self.__profiles_in_flight[file_path_prefix] = context
-      if context.is_complete and not context.profiles:
+      if context.complete and not context.profiles:
         done = True
         self.__profiles_in_flight.pop(file_path_prefix, None)
       return done
@@ -64,14 +65,14 @@ class ProfileProcessingContext(object):
     return self.__profiles
 
   @property
-  def is_complete(self):
+  def complete(self):
     return self.__complete
 
-  @is_complete.setter
-  def is_complete(self):
-    self.set_is_complete()
+  @complete.setter
+  def complete(self):
+    self.set_complete()
 
-  def set_is_complete(self):
+  def set_complete(self):
     self.__complete = True
     return self
 
