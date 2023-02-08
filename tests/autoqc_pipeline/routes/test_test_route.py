@@ -11,7 +11,7 @@ from eipiphany_core.framework.test_support.eip_test_context import \
 from eipiphany_core.framework.test_support.test_eip_context_termination import \
   TestEipContextTermination
 
-from autoqc_pipeline.routepy.framework.processor import Processor
+from eipiphany_core.framework.base.processor import Processor
 from src.autoqc_pipeline.application.route_configurer import RouteConfigurer
 
 
