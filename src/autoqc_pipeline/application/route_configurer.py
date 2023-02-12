@@ -16,7 +16,7 @@ from profile_filter import ProfileFilter
 
 class RouteConfigurer(object):
 
-  def __init__(self, eip_context, wod_directory, auto_qc_home, gunzip_directory, output_directory, concurrent_unzip_files, test_concurrency):
+  def __init__(self, eip_context, wod_directory, auto_qc_home, gunzip_directory, output_directory, concurrent_unzip_files, test_concurrency, run_only_iquod=False):
     self.__eip_context = eip_context
     self.__wod_directory = wod_directory
     self.__gunzip_directory = gunzip_directory
@@ -28,7 +28,7 @@ class RouteConfigurer(object):
     self.__test_catalog = TestCatalog()
     self.__geohash_service = GeohashService(self.__gunzip_directory)
     self.__filter = ProfileFilter()
-    self.__profile_test_processor = ProfileTestProcessor(self.__auto_qc_home, self.__filter, self.__test_catalog, self.__geohash_service, self.__gunzip_directory)
+    self.__profile_test_processor = ProfileTestProcessor(self.__auto_qc_home, self.__filter, self.__test_catalog, self.__geohash_service, self.__gunzip_directory, run_only_iquod)
 
   @property
   def file_controller(self):

@@ -46,10 +46,11 @@ class FileController(object):
         return True
       done = False
       context.profiles.remove(profile_num)
-      self.__profiles_in_flight[file_path_prefix] = context
       if context.complete and not context.profiles:
         done = True
-        self.__profiles_in_flight.pop(file_path_prefix, None)
+        del self.__profiles_in_flight[file_path_prefix]
+      else:
+        self.__profiles_in_flight[file_path_prefix] = context
       return done
     finally:
       self.__lock.release()
@@ -67,10 +68,6 @@ class ProfileProcessingContext(object):
   @property
   def complete(self):
     return self.__complete
-
-  @complete.setter
-  def complete(self):
-    self.set_complete()
 
   def set_complete(self):
     self.__complete = True
