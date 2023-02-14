@@ -106,7 +106,7 @@ class GeohashService(object):
     current_hash = self.get_adjacent(geohash, 'right')
     while current_hash != geohash:
       ring.append(current_hash)
-      current_hash = self.get_adjacent(geohash, 'right')
+      current_hash = self.get_adjacent(current_hash, 'right')
     return ring
 
   def __get_latitude_hashes(self, center, size):
@@ -140,7 +140,7 @@ class GeohashService(object):
     return geohashes
 
 
-  def get_hashes_to_check(self, geohash, ring_offset):
+  def get_hashes_to_check(self, geohash, ring_offset, debug=False):
     hashes = set()
     last_top = None
     top = geohash
@@ -160,26 +160,53 @@ class GeohashService(object):
         if bottom:
           last_bottom = bottom
     size = (ring_offset * 2) + 1
+    if debug:
+      print("center={} left={} right={} top={} bottom={}".format(geohash, left, right, top, bottom))
 
+    left_lon_hashes = []
     for ghash in self.__get_longitude_hashes(left, size):
+      left_lon_hashes.append(ghash)
       hashes.add(ghash)
 
+    if debug:
+      print("left_lon_hashes={}".format(left_lon_hashes))
+
+    right_lon_hashes = []
     for ghash in self.__get_longitude_hashes(right, size):
+      right_lon_hashes.append(ghash)
       hashes.add(ghash)
 
+    if debug:
+      print("right_lon_hashes={}".format(right_lon_hashes))
+
+    top_lat_hashes = []
     if top:
+      if debug: print("top get_latitude_hashes {}".format(top))
       for ghash in self.__get_latitude_hashes(top, size):
+        top_lat_hashes.append(ghash)
         hashes.add(ghash)
     else:
+      if debug: print("top get_latitude_ring {}".format(last_top))
       for ghash in self.__get_latitude_ring(last_top):
+        top_lat_hashes.append(ghash)
         hashes.add(ghash)
 
-
+    bottom_lat_hashes = []
     if bottom:
+      if debug: print("bottom get_latitude_hashes {}".format(bottom))
       for ghash in self.__get_latitude_hashes(bottom, size):
+        bottom_lat_hashes.append(ghash)
         hashes.add(ghash)
     else:
+      if debug: print("bottom get_latitude_ring {}".format(last_bottom))
       for ghash in self.__get_latitude_ring(last_bottom):
+        bottom_lat_hashes.append(ghash)
         hashes.add(ghash)
+
+    if debug:
+      print("left_lon_hashes={}".format(left_lon_hashes))
+      print("right_lon_hashes={}".format(right_lon_hashes))
+      print("top_lat_hashes={}".format(top_lat_hashes))
+      print("bottom_lat_hashes={}".format(bottom_lat_hashes))
 
     return hashes
