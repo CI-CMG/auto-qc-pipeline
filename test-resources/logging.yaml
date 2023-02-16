@@ -7,7 +7,7 @@ formatters:
 handlers:
   console:
     class: 'logging.StreamHandler'
-    formatter': 'simple'
+    formatter: 'simple'
     stream': 'ext://sys.stdout'
 loggers:
   eipiphany:
