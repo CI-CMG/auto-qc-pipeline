@@ -6,9 +6,9 @@ formatters:
     datefmt: '%Y-%m-%d %H:%M:%S'
 handlers:
   console:
-  class: 'logging.StreamHandler'
-  formatter': 'simple'
-  stream': 'ext://sys.stdout'
+    class: 'logging.StreamHandler'
+    formatter': 'simple'
+    stream': 'ext://sys.stdout'
 loggers:
   eipiphany:
     level: 'INFO'
