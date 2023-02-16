@@ -25,15 +25,13 @@ class FileGunzipProcessor(Processor):
     Path(os.path.split(wod_file_path)[0]).mkdir( parents=True, exist_ok=True )
     file_message.wod_file_path = wod_file_path
     now = datetime.now().strftime("%Y-%m-%dT%H:%M:%M.%f")
-    print("gunzip start {0} {1}".format(now, gzip_path))
-    # logger.info("gunzip start {0} {1}".format(now, gzip_path))
+    logger.info("gunzip start {0} {1}".format(now, gzip_path))
     with gzip.open(gzip_path, 'rb') as f_in:
       with open(wod_file_path, 'wb') as f_out:
         shutil.copyfileobj(f_in, f_out)
-    print("gunzip end {0} {1}".format(now, gzip_path))
-    # logger.info("gunzip end {0} {1}".format(now, gzip_path))
+    logger.info("gunzip end {0} {1}".format(now, gzip_path))
     results_dir = os.path.join(self.__output_dir, file_message.file_path_prefix + "-QC")
     if os.path.exists(results_dir):
       shutil.rmtree(results_dir, ignore_errors=True)
     Path(results_dir).mkdir( parents=True, exist_ok=True )
-    print("Created {0}".format(results_dir))
+    logger.debug("Created {0}".format(results_dir))

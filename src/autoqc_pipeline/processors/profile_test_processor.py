@@ -1,3 +1,4 @@
+import gc
 import logging
 import os
 import time
@@ -56,9 +57,10 @@ class ProfileTestProcessor(Processor):
                 profile_test_result.profile_failures.add(test.name)
                 profile_test_result.depth_failures[depth].add(test.name)
       finally:
+        gc.collect()
         os.chdir(cwd)
         end = time.time()
-        print("profile {}/{} tested in {} sec.".format(test_message.file_path_prefix, str(profile.uid()), str(end - start)))
+        logger.debug("profile {}/{} tested in {} sec.".format(test_message.file_path_prefix, str(profile.uid()), str(end - start)))
     else:
       test_message.profile_test_result.skipped = True
 

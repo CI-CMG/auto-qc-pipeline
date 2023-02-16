@@ -9,7 +9,7 @@ gsw==3.6.16.post1
 cotede==0.23.6
 xarray==0.16.1
 matplotlib==3.6.3
-eipiphany-file==0.1.0.dev20230204205414
-eipiphany-seda==0.1.0.dev20230204205414
+eipiphany-file==0.1.0.dev20230216160339
+eipiphany-seda==0.1.0.dev20230216160339
 PyYAML
 git+https://github.com/wdm0006/pygeohash

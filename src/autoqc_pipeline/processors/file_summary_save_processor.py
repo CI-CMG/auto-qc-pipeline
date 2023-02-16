@@ -1,8 +1,10 @@
 import json
+import logging
 import os
 
 from eipiphany_core.framework.base.processor import Processor
 
+logger = logging.getLogger('autoqc.FileSummarySaveProcessor')
 
 class FileSummarySaveProcessor(Processor):
 
@@ -21,5 +23,5 @@ class FileSummarySaveProcessor(Processor):
     serialized = json.dumps(json_obj)
     with open(summary_file, "w") as outfile:
       outfile.write(serialized)
-    print("finished {}".format(file_summary.file_path_prefix))
+    logger.info("finished {}".format(file_summary.file_path_prefix))
 

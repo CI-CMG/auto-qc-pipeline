@@ -12,8 +12,7 @@ class TestErrorDlqPrepProcessor(Processor):
   def process(self, exchange):
     cause = exchange.get_header(ErrorHandler.EXCEPTION_CAUGHT)
     detail = exchange.get_header(ErrorHandler.EXCEPTION_CAUGHT_DETAIL)
-    # logger.error("Exception in route (" + cause + ") " + detail)
-    print("Exception in route (" + cause + ") " + detail)
+    logger.error("Exception in route (" + cause + ") " + detail)
 
     error_message = str(cause)
     if not error_message:
