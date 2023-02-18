@@ -85,71 +85,71 @@ LFPR = 'LFPR'
 
 
 tests = [
-  TestInfo('AOML_climatology_test', AOML_climatology_test, {HTPR, Comp}),
-  TestInfo('AOML_constant', AOML_constant, {HTPR}),
-  TestInfo('AOML_gradient', AOML_gradient, {HTPR}),
-  TestInfo('AOML_gross', AOML_gross, {}),
-  TestInfo('AOML_spike', AOML_spike, {HTPR}),
-  TestInfo('Argo_global_range_check', Argo_global_range_check, {HTPR}),
-  TestInfo('Argo_gradient_test', Argo_gradient_test, {}),
-  TestInfo('Argo_impossible_date_test', Argo_impossible_date_test, {HTPR, Comp, LFPR}),
-  TestInfo('Argo_impossible_location_test', Argo_impossible_location_test, {HTPR, Comp, LFPR}),
-  TestInfo('Argo_pressure_increasing_test', Argo_pressure_increasing_test, {}),
-  TestInfo('Argo_regional_range_test', Argo_regional_range_test, {}),
-  TestInfo('Argo_spike_test', Argo_spike_test, {HTPR}),
-  TestInfo('CoTeDe_anomaly_detection', CoTeDe_anomaly_detection, {HTPR}),
-  TestInfo('CoTeDe_Argo_density_inversion', CoTeDe_Argo_density_inversion, {}),
-  TestInfo('CoTeDe_digit_roll_over', CoTeDe_digit_roll_over, {}),
-  TestInfo('CoTeDe_fuzzy_logic', CoTeDe_fuzzy_logic, {}),
-  TestInfo('CoTeDe_gradient', CoTeDe_gradient, {}),
-  TestInfo('CoTeDe_GTSPP_global_range', CoTeDe_GTSPP_global_range, {}),
-  TestInfo('CoTeDe_GTSPP_gradient', CoTeDe_GTSPP_gradient, {}),
-  TestInfo('CoTeDe_GTSPP_profile_envelop', CoTeDe_GTSPP_profile_envelop, {}),
-  TestInfo('CoTeDe_GTSPP_spike_check', CoTeDe_GTSPP_spike_check, {}),
-  TestInfo('CoTeDe_GTSPP_WOA_normbias', CoTeDe_GTSPP_WOA_normbias, {HTPR, Comp}),
-  TestInfo('CoTeDe_location_at_sea_test', CoTeDe_location_at_sea_test, {}),
-  TestInfo('CoTeDe_Morello2014', CoTeDe_Morello2014, {}),
-  TestInfo('CoTeDe_rate_of_change', CoTeDe_rate_of_change, {}),
-  TestInfo('CoTeDe_spike', CoTeDe_spike, {}),
-  TestInfo('CoTeDe_tukey53H', CoTeDe_tukey53H, {HTPR}),
-  TestInfo('CoTeDe_tukey53H_norm', CoTeDe_tukey53H_norm, {}),
-  TestInfo('CoTeDe_WOA_normbias', CoTeDe_WOA_normbias, {}),
-  TestInfo('CSIRO_constant_bottom', CSIRO_constant_bottom, {HTPR}),
-  TestInfo('CSIRO_depth', CSIRO_depth, {HTPR, Comp}),
-  TestInfo('CSIRO_long_gradient', CSIRO_long_gradient, {HTPR, Comp, LFPR}),
-  TestInfo('CSIRO_short_gradient', CSIRO_short_gradient, {HTPR}),
-  TestInfo('CSIRO_surface_spikes', CSIRO_surface_spikes, {}),
-  TestInfo('CSIRO_wire_break', CSIRO_wire_break, {HTPR}),
-  TestInfo('EN_background_available_check', EN_background_available_check, {HTPR, Comp}),
-  TestInfo('EN_background_check', EN_background_check, {LFPR}),
-  TestInfo('EN_constant_value_check', EN_constant_value_check, {HTPR, Comp}),
-  TestInfo('EN_increasing_depth_check', EN_increasing_depth_check, {Comp, LFPR}),
-  TestInfo('EN_range_check', EN_range_check, {HTPR}),
-  TestInfo('EN_spike_and_step_check', EN_spike_and_step_check, {Comp, LFPR}),
-  TestInfo('EN_spike_and_step_suspect', EN_spike_and_step_suspect, {HTPR}),
-  TestInfo('EN_stability_check', EN_stability_check, {Comp, LFPR}),
-  TestInfo('EN_std_lev_bkg_and_buddy_check', EN_std_lev_bkg_and_buddy_check, {HTPR, LFPR}),
+  TestInfo('AOML_climatology_test', AOML_climatology_test, {HTPR, Comp}), # Memory leak mitigated
+  TestInfo('AOML_constant', AOML_constant, {HTPR}), # No detected memory issues
+  TestInfo('AOML_gradient', AOML_gradient, {HTPR}), # No detected memory issues
+  TestInfo('AOML_gross', AOML_gross, {}), # No detected memory issues
+  TestInfo('AOML_spike', AOML_spike, {HTPR}), # No detected memory issues
+  TestInfo('Argo_global_range_check', Argo_global_range_check, {HTPR}), # No detected memory issues
+  TestInfo('Argo_gradient_test', Argo_gradient_test, {}), # No detected memory issues
+  TestInfo('Argo_impossible_date_test', Argo_impossible_date_test, {HTPR, Comp, LFPR}), # No detected memory issues
+  TestInfo('Argo_impossible_location_test', Argo_impossible_location_test, {HTPR, Comp, LFPR}), # No detected memory issues
+  TestInfo('Argo_pressure_increasing_test', Argo_pressure_increasing_test, {}), # No detected memory issues
+  TestInfo('Argo_regional_range_test', Argo_regional_range_test, {}), # No detected memory issues
+  TestInfo('Argo_spike_test', Argo_spike_test, {HTPR}), # No detected memory issues
+  TestInfo('CoTeDe_anomaly_detection', CoTeDe_anomaly_detection, {HTPR}),  # Memory leak mitigated
+  TestInfo('CoTeDe_Argo_density_inversion', CoTeDe_Argo_density_inversion, {}),  # Memory leak mitigated
+  TestInfo('CoTeDe_digit_roll_over', CoTeDe_digit_roll_over, {}),  # Memory leak mitigated
+  TestInfo('CoTeDe_fuzzy_logic', CoTeDe_fuzzy_logic, {}), # Memory leak mitigated
+  TestInfo('CoTeDe_gradient', CoTeDe_gradient, {}),  # Memory leak mitigated
+  TestInfo('CoTeDe_GTSPP_global_range', CoTeDe_GTSPP_global_range, {}),  # Memory leak mitigated
+  TestInfo('CoTeDe_GTSPP_gradient', CoTeDe_GTSPP_gradient, {}),  # Memory leak mitigated
+  TestInfo('CoTeDe_GTSPP_profile_envelop', CoTeDe_GTSPP_profile_envelop, {}),  # Memory leak mitigated
+  TestInfo('CoTeDe_GTSPP_spike_check', CoTeDe_GTSPP_spike_check, {}), # Memory leak mitigated
+  TestInfo('CoTeDe_GTSPP_WOA_normbias', CoTeDe_GTSPP_WOA_normbias, {HTPR, Comp}),  # Memory leak mitigated
+  TestInfo('CoTeDe_location_at_sea_test', CoTeDe_location_at_sea_test, {}),  # Memory leak mitigated
+  TestInfo('CoTeDe_Morello2014', CoTeDe_Morello2014, {}),  # Memory leak mitigated
+  TestInfo('CoTeDe_rate_of_change', CoTeDe_rate_of_change, {}),  # Memory leak mitigated
+  TestInfo('CoTeDe_spike', CoTeDe_spike, {}),  # Memory leak mitigated
+  TestInfo('CoTeDe_tukey53H', CoTeDe_tukey53H, {HTPR}),  # Memory leak mitigated
+  TestInfo('CoTeDe_tukey53H_norm', CoTeDe_tukey53H_norm, {}),  # Memory leak mitigated
+  TestInfo('CoTeDe_WOA_normbias', CoTeDe_WOA_normbias, {}),  # Memory leak mitigated
+  TestInfo('CSIRO_constant_bottom', CSIRO_constant_bottom, {HTPR}), # No detected memory issues
+  TestInfo('CSIRO_depth', CSIRO_depth, {HTPR, Comp}), # No detected memory issues
+  TestInfo('CSIRO_long_gradient', CSIRO_long_gradient, {HTPR, Comp, LFPR}), # No detected memory issues
+  TestInfo('CSIRO_short_gradient', CSIRO_short_gradient, {HTPR}), # No detected memory issues
+  TestInfo('CSIRO_surface_spikes', CSIRO_surface_spikes, {}), # No detected memory issues
+  TestInfo('CSIRO_wire_break', CSIRO_wire_break, {HTPR}), # No detected memory issues
+  TestInfo('EN_background_available_check', EN_background_available_check, {HTPR, Comp}), # No detected memory issues
+  TestInfo('EN_background_check', EN_background_check, {LFPR}), # No detected memory issues
+  TestInfo('EN_constant_value_check', EN_constant_value_check, {HTPR, Comp}), # No detected memory issues
+  TestInfo('EN_increasing_depth_check', EN_increasing_depth_check, {Comp, LFPR}), # No detected memory issues
+  TestInfo('EN_range_check', EN_range_check, {HTPR}), # No detected memory issues
+  TestInfo('EN_spike_and_step_check', EN_spike_and_step_check, {Comp, LFPR}), # No detected memory issues
+  TestInfo('EN_spike_and_step_suspect', EN_spike_and_step_suspect, {HTPR}), # No detected memory issues
+  TestInfo('EN_stability_check', EN_stability_check, {Comp, LFPR}), # No detected memory issues
+  TestInfo('EN_std_lev_bkg_and_buddy_check', EN_std_lev_bkg_and_buddy_check, {HTPR, LFPR}), # No detected memory issues
 
   ## Skip EN_track_check as this test checks multiple profiles which has multiple problems:
   ## 1) memory inefficent 2) exponentionally complex 3) not compatible with profiles flowing through this pipeline
   ## Not needed for iquod flag determination
   # TestInfo('EN_track_check', EN_track_check, {}),
 
-  TestInfo('ICDC_aqc_01_level_order', ICDC_aqc_01_level_order, {HTPR, Comp, LFPR}),
-  TestInfo('ICDC_aqc_02_crude_range', ICDC_aqc_02_crude_range, {LFPR}),
-  TestInfo('ICDC_aqc_04_max_obs_depth', ICDC_aqc_04_max_obs_depth, {}),
-  TestInfo('ICDC_aqc_05_stuck_value', ICDC_aqc_05_stuck_value, {LFPR}),
-  TestInfo('ICDC_aqc_06_n_temperature_extrema', ICDC_aqc_06_n_temperature_extrema, {HTPR}),
-  TestInfo('ICDC_aqc_07_spike_check', ICDC_aqc_07_spike_check, {HTPR}),
-  TestInfo('ICDC_aqc_08_gradient_check', ICDC_aqc_08_gradient_check, {HTPR, Comp}),
-  TestInfo('ICDC_aqc_09_local_climatology_check', ICDC_aqc_09_local_climatology_check, {HTPR}),
-  TestInfo('ICDC_aqc_10_local_climatology_check', ICDC_aqc_10_local_climatology_check, {HTPR}),
-  TestInfo('IQUOD_bottom', IQUOD_bottom, {HTPR}),
-  TestInfo('IQuOD_gross_range_check', IQuOD_gross_range_check, {HTPR, Comp, LFPR}),
-  TestInfo('loose_location_at_sea', loose_location_at_sea, {LFPR}),
-  TestInfo('minmax', minmax, {}),
-  TestInfo('WOD_gradient_check', WOD_gradient_check, {}),
-  TestInfo('WOD_range_check', WOD_range_check, {Comp, LFPR}),
+  TestInfo('ICDC_aqc_01_level_order', ICDC_aqc_01_level_order, {HTPR, Comp, LFPR}), # No detected memory issues
+  TestInfo('ICDC_aqc_02_crude_range', ICDC_aqc_02_crude_range, {LFPR}), # No detected memory issues
+  TestInfo('ICDC_aqc_04_max_obs_depth', ICDC_aqc_04_max_obs_depth, {}), # No detected memory issues
+  TestInfo('ICDC_aqc_05_stuck_value', ICDC_aqc_05_stuck_value, {LFPR}), # No detected memory issues
+  TestInfo('ICDC_aqc_06_n_temperature_extrema', ICDC_aqc_06_n_temperature_extrema, {HTPR}), # No detected memory issues
+  TestInfo('ICDC_aqc_07_spike_check', ICDC_aqc_07_spike_check, {HTPR}), # No detected memory issues
+  TestInfo('ICDC_aqc_08_gradient_check', ICDC_aqc_08_gradient_check, {HTPR, Comp}), # No detected memory issues
+  TestInfo('ICDC_aqc_09_local_climatology_check', ICDC_aqc_09_local_climatology_check, {HTPR}), # No detected memory issues
+  TestInfo('ICDC_aqc_10_local_climatology_check', ICDC_aqc_10_local_climatology_check, {HTPR}), # No detected memory issues
+  TestInfo('IQUOD_bottom', IQUOD_bottom, {HTPR}), # No detected memory issues
+  TestInfo('IQuOD_gross_range_check', IQuOD_gross_range_check, {HTPR, Comp, LFPR}), # No detected memory issues
+  TestInfo('loose_location_at_sea', loose_location_at_sea, {LFPR}), # No detected memory issues
+  TestInfo('minmax', minmax, {}), # No detected memory issues
+  TestInfo('WOD_gradient_check', WOD_gradient_check, {}), # No detected memory issues
+  TestInfo('WOD_range_check', WOD_range_check, {Comp, LFPR}), # No detected memory issues
 ]
 
 class TestCatalog(object):
