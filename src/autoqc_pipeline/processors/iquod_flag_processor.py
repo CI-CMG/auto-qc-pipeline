@@ -1,6 +1,6 @@
 from eipiphany_core.framework.base.processor import Processor
 
-from .test_catalog import TestCatalog, HTPR, Comp, LFPR
+from .test_catalog import HTPR, Comp, LFPR
 
 
 class IquodFlagProcessor(Processor):
@@ -17,7 +17,7 @@ class IquodFlagProcessor(Processor):
     failed_test_sets = []
     for test_failures in test_result.depth_failures:
       failed_test_sets.append(self.__get_depth_failure_test_set(test_failures))
-    is_xbt = test_message.profile.probe_type() == 1
+    is_xbt = test_message.profile.probe_type() == 2
     flags = self.__gen_flags(failed_test_sets, is_xbt)
     test_result.iquod_flags = flags
 
@@ -31,11 +31,6 @@ class IquodFlagProcessor(Processor):
       test_set.add(LFPR)
     return test_set
 
-  def __get_flag_value(self, default_value, flag, is_xbt):
-    if is_xbt:
-      return max(default_value, flag)
-    return default_value
-
   def __gen_flags(self, failed_test_sets, is_xbt):
     '''
     given per-level lists of results for each of HTPR, Comp and LFPR cases,
@@ -44,13 +39,17 @@ class IquodFlagProcessor(Processor):
     '''
 
     flags = []
-    flag = 1
+    min_flag = 1
     for test_sets in failed_test_sets:
+      flag = min_flag
       if LFPR in test_sets:
-        flag = self.__get_flag_value(4, flag, is_xbt)
+        flag = max(4, min_flag)
+        if is_xbt: min_flag = max(4, min_flag)
       elif Comp in test_sets:
-        flag = self.__get_flag_value(3, flag, is_xbt)
+        flag = max(3, min_flag)
+        if is_xbt: min_flag = max(3, min_flag)
       elif HTPR in test_sets:
-        flag = self.__get_flag_value(2, flag, is_xbt)
+        flag = max(2, min_flag)
+        if is_xbt: min_flag = max(2, min_flag)
       flags.append(flag)
     return flags
