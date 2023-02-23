@@ -12,3 +12,5 @@ build
 /setup.py
 gunzip-dir
 test-dir
+.DS_Store
+__pycache__

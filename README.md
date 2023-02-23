@@ -53,11 +53,3 @@ Maven can be easily installed by downloading it from the Maven site or using sdk
 ## Build with Maven
 After setting up your pyenv run:
 ```mvn clean package```
-
-## Executable
-This project uses pyinstaller to build a system native application.  The application will be located at dist/split_survey.
-
-Run the application:
-```split_survey/split_survey <input_csv_file> <output_directory> <max_time_seconds> <max_distance_km>```
-Ex.
-```split_survey/split_survey AllData_3col.xyz AllData_3col_split 86400 1000```
