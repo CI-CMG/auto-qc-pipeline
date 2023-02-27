@@ -22,8 +22,8 @@ if __name__ == '__main__':
   gunzip_directory = os.environ['WOD_UNGZ_DATA']
   output_directory = os.environ['AUTO_QC_OUTPUT']
   auto_qc_home = os.environ['AUTO_QC_HOME']
-  concurrent_unzip_files = 3
-  test_concurrency = 16
+  concurrent_unzip_files = 2
+  test_concurrency = 3
 
   with EipContext() as eip_context:
     route_config = RouteConfigurer(eip_context, wod_directory, auto_qc_home,
