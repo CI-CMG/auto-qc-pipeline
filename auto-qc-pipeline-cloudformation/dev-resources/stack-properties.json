@@ -1,0 +1,5 @@
+{
+  "version": "@project.version@",
+  "deployStackName": "@user.name@-dev-auto-qc-pipeline-deploy",
+  "stackName": "@user.name@-dev-auto-qc-pipeline"
+}

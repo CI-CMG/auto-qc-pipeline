@@ -1,0 +1,14 @@
+[
+  {
+    "ParameterKey": "StackPrefix",
+    "ParameterValue": "@user.name@-dev-auto-qc-pipeline"
+  },
+  {
+    "ParameterKey": "RolePermissionsBoundary",
+    "ParameterValue": "Customer_Admin_PermissionBoundary"
+  },
+  {
+    "ParameterKey": "KeyName",
+    "ParameterValue": "chris-key"
+  }
+]

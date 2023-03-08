@@ -1,0 +1,509 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: auto-qc-pipeline
+
+Parameters:
+  StackPrefix:
+    Description: A prefix that identifies this stack
+    Type: String
+  RolePermissionsBoundary:
+    Description: An optional permissions boundary to associate with roles
+    Type: String
+    Default: ""
+  LogRetentionInDays:
+    Description: The number of days to keep CloudWatch logs
+    Type: Number
+    MinValue: 0
+    Default: 30
+  KeyName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
+    Type: 'AWS::EC2::KeyPair::KeyName'
+    ConstraintDescription: Can contain only ASCII characters.
+  VolumeSizeGB:
+    Type: Number
+    Default: 500
+  VpcId:
+    Type: String
+    Default: ""
+  SubnetId:
+    Type: String
+    Default: ""
+  UnzipConcurrency:
+    Type: Number
+    Default: 3
+  TestConcurrency:
+    Type: Number
+    Default: 6
+  WodAsciiBucket:
+    Type: String
+    Default: "cires-wod"
+  RunOnlyIquodTests:
+    Type: String
+    AllowedValues:
+      - "True"
+      - "False"
+    Default: "False"
+  InstanceType:
+    Description: EC2 instance type
+    Type: String
+    Default: m5.2xlarge
+    AllowedValues:
+      # CPU=2 MEM=2GB
+      - t3.small
+      # CPU=2 MEM=4GB
+      - t3.medium
+      # CPU=2 MEM=8GB
+      - m5.large
+      # CPU=4 MEM=16GB
+      - m5.xlarge
+      # CPU=8 MEM=32GB
+      - m5.2xlarge
+    ConstraintDescription: must be a valid EC2 instance type.
+  SSHLocation:
+    Description: The IP address range that can be used to SSH to the EC2 instances
+    Type: String
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 0.0.0.0/0
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    ConstraintDescription: Must be a valid IP CIDR range of the form x.x.x.x/x
+
+Mappings:
+
+  AWSRegion2AMI:
+    us-east-1:
+      AMI: ami-006dcf34c09e50022
+    us-east-2:
+      AMI: ami-0f3c9c466bb525749
+    us-west-1:
+      AMI: ami-060d3509162bcc386
+    us-west-2:
+      AMI: ami-0735c191cf914754d
+
+
+Conditions:
+  HasPermissionsBoundary:
+    Fn::Not:
+      - Fn::Equals:
+          - ""
+          - !Ref RolePermissionsBoundary
+  HasVpcId:
+    Fn::Not:
+      - Fn::Equals:
+          - ""
+          - !Ref VpcId
+
+  HasSubnetId:
+    Fn::Not:
+      - Fn::Equals:
+          - ""
+          - !Ref SubnetId
+
+Resources:
+
+  SecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Enable SSH
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref SSHLocation
+      VpcId:
+        Fn::If:
+          - HasVpcId
+          - !Ref VpcId
+          - !Ref AWS::NoValue
+
+  EC2LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/ec2/${AWS::StackName}/auto-qc-pipeline
+      RetentionInDays: !Ref LogRetentionInDays
+
+  EC2Instance:
+    Type: 'AWS::EC2::Instance'
+    Metadata:
+      AWS::CloudFormation::Init:
+        configSets:
+          default:
+            - 01_setupCfnHup
+            - 02_setupApp
+          UpdateEnvironment:
+            - 02_setupApp
+        01_setupCfnHup:
+          packages:
+            apt:
+              git: [ ]
+          services:
+            systemd:
+              cfn-hup:
+                enabled: true
+                ensureRunning: true
+                files:
+                  - '/etc/cfn/cfn-hup.conf'
+                  - '/etc/cfn/hooks.d/cfn-auto-reloader.conf'
+          files:
+            '/etc/cfn/cfn-hup.conf':
+              content: !Sub |
+                [main]
+                stack=${AWS::StackId}
+                region=${AWS::Region}
+                interval=1
+              mode: '000400'
+              owner: root
+              group: root
+            '/etc/cfn/hooks.d/cfn-auto-reloader.conf':
+              content: !Sub |
+                [cfn-auto-reloader-hook]
+                triggers=post.update
+                path=Resources.EC2Instance.Metadata.AWS::CloudFormation::Init
+                action=/opt/aws/bin/cfn-init -v --stack ${AWS::StackId} --resource EC2Instance --region ${AWS::Region} --configsets UpdateEnvironment
+                runas=root
+            '/lib/systemd/system/cfn-hup.service':
+              content: !Sub |
+                [Unit]
+                Description=cfn-hup daemon
+                [Service]
+                Type=simple
+                ExecStart=/opt/aws/bin/cfn-hup
+                Restart=always
+                [Install]
+                WantedBy=multi-user.target
+          commands:
+            '01':
+              command: systemctl enable cfn-hup.service
+            '02':
+              command: systemctl start cfn-hup.service
+#            '03':
+#              command: set -ex && yum groupinstall "Development Tools" -y
+            '04':
+              command: set -ex && curl https://pyenv.run | bash
+            '05':
+              command: set -ex && echo 'export PYENV_ROOT="/.pyenv"' >> /root/.bash_profile
+            '06':
+              command: set -ex && echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> /root/.bash_profile
+            '07':
+              command: set -ex && echo 'eval "$(pyenv init -)"' >> /root/.bash_profile
+            '08':
+              command: set -ex && echo 'eval "$(pyenv virtualenv-init -)"' >> /root/.bash_profile
+        02_setupApp:
+          packages:
+            apt:
+              awscli: [ ]
+              unzip: [ ]
+#              amazon-cloudwatch-agent: [ ]
+#              java-11-amazon-corretto-headless: [ ]
+#              jq: [ ]
+#              bzip2-devel: [ ]
+              libbz2-dev: [ ]
+#              ncurses-devel: [ ]
+              libncurses5-dev: [ ]
+              libncursesw5-dev: [ ]
+#              libffi-devel: [ ]
+              libffi-dev: [ ]
+#              readline-devel: [ ]
+              libreadline8: [ ]
+              libreadline-dev: [ ]
+#              openssl-devel: [ ]
+              libssl-dev: [ ]
+#              sqlite-devel: [ ]
+              libsqlite3-dev: [ ]
+#              xz-devel: [ ]
+              liblzma-dev: [ ]
+              libgl1-mesa-glx: [ ]
+              libxkbcommon-x11-0: [ ]
+              libegl1-mesa: [ ]
+              libegl1: [ ]
+          files:
+            '/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json':
+              content: !Sub |
+                {
+                    "metrics": {
+                      "append_dimensions": {
+                        "AutoScalingGroupName": "${!aws:AutoScalingGroupName}",
+                        "ImageId": "${!aws:ImageId}",
+                        "InstanceId": "${!aws:InstanceId}",
+                        "InstanceType": "${!aws:InstanceType}"
+                      },
+                      "metrics_collected": {
+                        "mem": {
+                          "measurement": [
+                            "mem_used_percent"
+                          ]
+                        },
+                        "swap": {
+                          "measurement": [
+                            "swap_used_percent"
+                          ]
+                        }
+                      }
+                    },
+                    "logs": {
+                      "logs_collected": {
+                        "files": {
+                          "collect_list": [
+                            {
+                              "file_path": "/var/log/dmesg",
+                              "log_group_name": "${EC2LogGroup}",
+                              "log_stream_name": "${AWS::StackName}/{instance_id}/var/log/dmesg"
+                            },
+                            {
+                              "file_path": "/var/log/messages",
+                              "log_group_name": "${EC2LogGroup}",
+                              "log_stream_name": "${AWS::StackName}/{instance_id}/var/log/messages",
+                              "timestamp_format": "%b %d %H:%M:%S"
+                            },
+                            {
+                              "file_path": "/var/log/secure",
+                              "log_group_name": ${EC2LogGroup}",
+                              "log_stream_name": "${AWS::StackName}/{instance_id}/var/log/secure",
+                              "timestamp_format": "%b %d %H:%M:%S"
+                            },
+                            {
+                              "file_path": "/var/log/cron",
+                              "log_group_name": "${EC2LogGroup}",
+                              "log_stream_name": "${AWS::StackName}/{instance_id}/var/log/cron",
+                              "timestamp_format": "%b %d %H:%M:%S"
+                            },
+                            {
+                              "file_path": "/var/log/cfn-init.log",
+                              "log_group_name": "${EC2LogGroup}",
+                              "log_stream_name": "${AWS::StackName}/{instance_id}/var/log/cfn-init.log",
+                              "timestamp_format": "%Y-%m-%d %H:%M:%S"
+                            },
+                            {
+                              "file_path": "/var/log/cfn-hup.log",
+                              "log_group_name": "${EC2LogGroup}",
+                              "log_stream_name": "${AWS::StackName}/{instance_id}/var/log/cfn-hup.log",
+                              "timestamp_format": "%Y-%m-%d %H:%M:%S"
+                            },
+                            {
+                              "file_path": "/var/log/cfn-init-cmd.log",
+                              "log_group_name": "${EC2LogGroup}",
+                              "log_stream_name": "${AWS::StackName}/{instance_id}/var/log/cfn-init-cmd.log",
+                              "timestamp_format": "%Y-%m-%d %H:%M:%S"
+                            },
+                            {
+                              "file_path": "/var/log/cloud-init-output.log",
+                              "log_group_name": "${EC2LogGroup}",
+                              "log_stream_name": "${AWS::StackName}/{instance_id}/var/log/cloud-init-output.log"
+                            },
+                            {
+                              "file_path": "/auto-qc-pipeline/logs/auto-qc-pipeline.log",
+                              "log_group_name": "${EC2LogGroup}",
+                              "log_stream_name": "${AWS::StackName}/{instance_id}/auto-qc-pipeline/logs/auto-qc-pipeline.log"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+              mode: '000644'
+              owner: root
+              group: root
+            '/usr/lib/systemd/system/auto-qc-pipeline.service':
+              content: !Sub |
+                [Unit]
+                Description=auto-qc-pipeline
+                After=network.target
+
+                [Service]
+                WorkingDirectory=/auto-qc-pipeline/current
+                Type=simple
+                Restart=always
+                StartLimitInterval=0
+                RestartSec=20
+                User=root
+                ExecStart=/bin/bash -l -c 'exec "$\@"' _ /auto-qc-pipeline/current/run-auto-qc-service.sh
+                EnvironmentFile=/etc/auto-qc-pipeline-service/env
+                StandardOutput=journal
+                StandardError=inherit
+
+                [Install]
+                WantedBy=multi-user.target
+            '/etc/auto-qc-pipeline-service/env':
+              content: !Sub |
+                AUTO_QC_HOME=/AutoQC
+                AUTO_QC_PIPELINE_ROOT=/auto-qc-pipeline/current
+                PYTHONPATH=/auto-qc-pipeline/current:/AutoQC
+                PYTHONUNBUFFERED=1
+                WOD_GZ_DATA=/data/wod
+                WOD_UNGZ_DATA=/data/processing-tmp
+                AUTO_QC_OUTPUT=/data/wod-qc
+                AUTO_QC_PIPELINE_UNZIP_CONCUR=${UnzipConcurrency}
+                AUTO_QC_PIPELINE_TEST_CONCUR=${TestConcurrency}
+                RUN_ONLY_IQUOD=${RunOnlyIquodTests}
+                AUTO_QC_LOGGING_YAML=/auto-qc-pipeline/current/auto-qc-service-logging.yaml
+              mode: '000644'
+              owner: root
+              group: root
+
+          commands:
+            '01':
+              command: !Sub
+                - set -ex && aws s3 cp s3://${DeploymentBucketName}/service/auto-qc-pipeline-@project.version@@dashTimestamp@.zip /auto-qc-pipeline/@project.version@@dashTimestamp@/auto-qc-pipeline-@project.version@@dashTimestamp@.zip --quiet
+                - DeploymentBucketName:
+                    Fn::ImportValue: !Sub ${StackPrefix}-auto-qc-pipeline-deployment-bucket
+            '02':
+              command: set -ex && unzip /auto-qc-pipeline/@project.version@@dashTimestamp@/auto-qc-pipeline-@project.version@@dashTimestamp@.zip -d /auto-qc-pipeline/@project.version@@dashTimestamp@
+            '03':
+              command: set -ex && rm /auto-qc-pipeline/@project.version@@dashTimestamp@/auto-qc-pipeline-@project.version@@dashTimestamp@.zip
+            '06':
+              command: set -ex && ln -s /auto-qc-pipeline/@project.version@@dashTimestamp@/auto-qc-pipeline-@project.version@ /auto-qc-pipeline/current
+            '07':
+              command: set -ex && mkdir -p /data/wod /data/processing-tmp /data/wod-qc /auto-qc-pipeline/logs
+            '08':
+              command: set -ex && git clone https://github.com/CI-CMG/AutoQC.git /AutoQC
+            '09':
+              command: set -ex && cd /AutoQC && git checkout auto-qc-pipeline
+            '10':
+#              For some reason libreadline-dev does not install properly with apt, use aptitide
+              command: set -ex && aptitude install libreadline-dev
+            '11':
+              command: set -ex && /bin/bash -l -c 'exec "$\@"' _ env PYTHON_CONFIGURE_OPTS="--enable-shared" pyenv install 3.9.2
+            '12':
+              command: set -ex && /bin/bash -l -c 'exec "$\@"' _ env PYTHON_CONFIGURE_OPTS="--enable-shared" pyenv global 3.9.2
+            '13':
+              command: set -ex && /bin/bash -l -c 'exec "$\@"' _ pyenv virtualenv 3.9.2 auto-qc-pipeline-@project.version@@dashTimestamp@
+            '14':
+              command: set -ex && cd /auto-qc-pipeline/current && /bin/bash -l -c 'exec "$\@"' _ pyenv local auto-qc-pipeline-@project.version@@dashTimestamp@
+            '15':
+              command: set -ex && cd /auto-qc-pipeline/current && /bin/bash -l -c 'exec "$\@"' _ pip install --upgrade pip
+            '16':
+              command: set -ex && cd /auto-qc-pipeline/current && /bin/bash -l -c 'exec "$\@"' _ pip install -r requirements.txt
+            '17':
+              command: !Sub set -ex && aws s3 sync s3://${WodAsciiBucket} /data/wod --quiet
+            '18':
+              command: set -ex && chmod +x /auto-qc-pipeline/current/setup-ec2.sh && export AUTO_QC_HOME=/AutoQC && /auto-qc-pipeline/current/setup-ec2.sh
+            '19':
+              command: set -ex && chmod +x /auto-qc-pipeline/current/run-auto-qc-pipeline.sh
+            '20':
+              command: set -ex && chmod +x /auto-qc-pipeline/current/run-auto-qc-service.sh
+            '21':
+              command: set -ex && systemctl daemon-reload
+            '22':
+              command: set -ex && systemctl enable auto-qc-pipeline.service
+            '23':
+              command: set -ex && systemctl restart auto-qc-pipeline.service
+          services:
+            systemd:
+              auto-qc-pipeline:
+                enabled: true
+                ensureRunning: true
+#              amazon-cloudwatch-agent:
+#                enabled: true
+#                ensureRunning: true
+#                packages:
+#                  apt:
+#                    - amazon-cloudwatch-agent
+#                files:
+#                  - '/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json'
+    CreationPolicy:
+      ResourceSignal:
+        Timeout: PT40M
+    Properties:
+      Tags:
+        - Key: Application
+          Value: auto-qc-pipeline
+        - Key: StackPrefix
+          Value: !Ref StackPrefix
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: ""
+      ImageId: !FindInMap
+        - AWSRegion2AMI
+        - !Ref 'AWS::Region'
+        - AMI
+      InstanceType: !Ref InstanceType
+      IamInstanceProfile: !Ref EC2InstanceProfile
+      SecurityGroupIds:
+        - !GetAtt SecurityGroup.GroupId
+      SubnetId:
+        Fn::If:
+          - HasSubnetId
+          - !Ref SubnetId
+          - !Ref AWS::NoValue
+      KeyName: !Ref KeyName
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            DeleteOnTermination: true
+            VolumeSize: !Ref VolumeSizeGB
+            VolumeType: gp2
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -x
+          apt update -y
+          apt install python3-pip aptitude -y
+          pip3 install  https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz          
+          /usr/local/bin/cfn-init   -v    --stack ${AWS::StackName} --region ${AWS::Region} --resource EC2Instance --configsets default
+          /usr/local/bin/cfn-signal -e $? --stack ${AWS::StackName} --region ${AWS::Region} --resource EC2Instance 
+
+
+  EC2Role:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Tags:
+        - Key: Application
+          Value: auto-qc-pipeline
+        - Key: StackPrefix
+          Value: !Ref StackPrefix
+      PermissionsBoundary:
+        Fn::If:
+          - HasPermissionsBoundary
+          - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/${RolePermissionsBoundary}
+          - !Ref AWS::NoValue
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: S3
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Resource: !Sub
+                  - arn:${AWS::Partition}:s3:::${DeploymentBucketName}/*
+                  - DeploymentBucketName:
+                      Fn::ImportValue: !Sub ${StackPrefix}-auto-qc-pipeline-deployment-bucket
+                Action:
+                  - s3:GetObject
+              - Effect: Allow
+                Resource: !Sub
+                  - arn:${AWS::Partition}:s3:::${DeploymentBucketName}
+                  - DeploymentBucketName:
+                      Fn::ImportValue: !Sub ${StackPrefix}-auto-qc-pipeline-deployment-bucket
+                Action:
+                  - s3:ListBucket
+        - PolicyName: Logging
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cloudwatch:PutMetricData
+                  - ec2:DescribeVolumes
+                  - ec2:DescribeTags
+                  - logs:PutLogEvents
+                  - logs:DescribeLogStreams
+                  - logs:DescribeLogGroups
+                  - logs:CreateLogStream
+                  - logs:CreateLogGroup
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - ssm:GetParameter
+                Resource: arn:aws:ssm:*:*:parameter/AmazonCloudWatch-*
+
+  EC2InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: '/'
+      Roles:
+        - Ref: EC2Role

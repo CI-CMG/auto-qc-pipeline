@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>edu.colorado.cires.wod.auto-qc-pipeline</groupId>
+    <artifactId>auto-qc-pipeline-parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>auto-qc-pipeline-cloudformation</artifactId>
+  <packaging>pom</packaging>
+
+  <properties>
+    <project-root>${project.parent.basedir}</project-root>
+    <dashTimestamp>-${maven.build.timestamp}</dashTimestamp>
+    <timestamp>${maven.build.timestamp}</timestamp>
+    <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>edu.colorado.cires.wod.auto-qc-pipeline</groupId>
+      <artifactId>auto-qc-pipeline</artifactId>
+      <version>${project.version}</version>
+      <type>zip</type>
+    </dependency>
+  </dependencies>
+
+  <build>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>cloudformation</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/target/cloudformation</outputDirectory>
+              <useDefaultDelimiters>false</useDefaultDelimiters>
+              <escapeString>\</escapeString>
+              <delimiters>
+                <delimiter>@</delimiter>
+              </delimiters>
+              <resources>
+                <resource>
+                  <directory>src${file.separator}cloudformation</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>dev-resources</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/target/dev-resources</outputDirectory>
+              <useDefaultDelimiters>false</useDefaultDelimiters>
+              <delimiters>
+                <delimiter>@</delimiter>
+              </delimiters>
+              <resources>
+                <resource>
+                  <directory>dev-resources</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <tarLongFileMode>posix</tarLongFileMode>
+          <appendAssemblyId>false</appendAssemblyId>
+          <descriptors>
+            <descriptor>src/assembly/dist.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>release</id>
+      <properties>
+        <dashTimestamp />
+      </properties>
+    </profile>
+  </profiles>
+
+</project>

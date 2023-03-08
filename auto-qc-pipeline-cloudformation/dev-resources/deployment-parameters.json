@@ -1,0 +1,14 @@
+[
+  {
+    "ParameterKey": "StackPrefix",
+    "ParameterValue": "@user.name@-dev-auto-qc-pipeline"
+  },
+  {
+    "ParameterKey": "DeploymentBucketName",
+    "ParameterValue": "@user.name@-dev-auto-qc-pipeline-deploy"
+  },
+  {
+    "ParameterKey": "EnvironmentType",
+    "ParameterValue": "dev"
+  }
+]

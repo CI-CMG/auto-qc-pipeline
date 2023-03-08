@@ -1,6 +1,7 @@
 .idea
 .pytest_cache
 .coverage
+.coverage.*
 *.iml
 .python-version
 target
@@ -9,7 +10,7 @@ htmlcov
 dist
 build
 *.egg-info
-/setup.py
+/auto-qc-pipeline/setup.py
 gunzip-dir
 test-dir
 .DS_Store

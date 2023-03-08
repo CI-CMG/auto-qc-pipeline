@@ -1,0 +1,16 @@
+pyside6
+numpy==1.23.5
+wodpy==1.6.2
+pyproj==3.4.1
+shapely==2.0.0
+netCDF4==1.6.2
+gsw==3.6.16.post1
+xarray==0.16.1
+matplotlib==3.6.3
+eipiphany-core==0.1.0.dev20230306154257
+eipiphany-file==0.1.0.dev20230306154257
+eipiphany-seda==0.1.0.dev20230306154257
+PyYAML
+git+https://github.com/wdm0006/pygeohash
+oceansdb>=0.8.15
+git+https://github.com/CI-CMG/CoTeDe@netcdf-mem-leak-workaround

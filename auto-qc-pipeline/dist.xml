@@ -1,0 +1,32 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+  <id>dist</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+
+
+  <fileSets>
+    <fileSet>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>requirements.txt</include>
+        <include>setup-ec2.sh</include>
+        <include>requirements.txt</include>
+        <include>run-auto-qc-service.sh</include>
+        <include>run-auto-qc-pipeline.sh</include>
+        <include>setup-ec2.sh</include>
+        <include>auto-qc-service-logging.yaml</include>
+      </includes>
+      <lineEnding>unix</lineEnding>
+    </fileSet>
+    <fileSet>
+      <directory>src</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>**/*.py</include>
+      </includes>
+      <lineEnding>unix</lineEnding>
+    </fileSet>
+  </fileSets>
+</assembly>

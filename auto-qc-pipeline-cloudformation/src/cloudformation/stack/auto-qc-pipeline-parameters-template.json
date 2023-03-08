@@ -1,0 +1,22 @@
+[
+  {
+    "ParameterKey": "StackPrefix",
+    "ParameterValue": "my-stack-prefix (matches deployment)"
+  },
+  {
+    "ParameterKey": "KeyName",
+    "ParameterValue": "my-ssh-key"
+  },
+  {
+    "ParameterKey": "VpcId",
+    "ParameterValue": "(optional)"
+  },
+  {
+    "ParameterKey": "RolePermissionsBoundary",
+    "ParameterValue": "(optional)"
+  },
+  {
+    "ParameterKey": "SubnetId",
+    "ParameterValue": "(optional)"
+  }
+]
