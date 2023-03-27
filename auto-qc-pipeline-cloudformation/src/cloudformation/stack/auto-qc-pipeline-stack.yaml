@@ -481,6 +481,14 @@ Resources:
                       Fn::ImportValue: !Sub ${StackPrefix}-auto-qc-pipeline-deployment-bucket
                 Action:
                   - s3:ListBucket
+              - Effect: Allow
+                Resource: !Sub arn:${AWS::Partition}:s3:::${WodAsciiBucket}/*
+                Action:
+                  - s3:GetObject
+              - Effect: Allow
+                Resource: !Sub arn:${AWS::Partition}:s3:::${WodAsciiBucket}
+                Action:
+                  - s3:ListBucket
         - PolicyName: Logging
           PolicyDocument:
             Version: '2012-10-17'
